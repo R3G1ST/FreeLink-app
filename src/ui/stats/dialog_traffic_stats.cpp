@@ -22,6 +22,8 @@
 
 #include <algorithm>
 
+#include "include/configs/generate.h"
+
 namespace {
     // Cap on named rows in each breakdown table; usage past this is collapsed into
     // a single "Other" row so the table stays a readable top-N.
@@ -242,6 +244,8 @@ void DialogTrafficStats::populateProfileTable(long long fromSecs, long long toSe
                 name = tr("Direct");
             } else if (const auto prof = Configs::dataManager->profilesRepo->GetProfile(u.profile_id)) {
                 name = prof->name;
+            } else if (u.profile_id == Configs::warpProfileID) {
+                name = "built-in warp";
             } else {
                 name = tr("Profile #%1 (deleted)").arg(u.profile_id);
             }
