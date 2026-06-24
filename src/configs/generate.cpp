@@ -1278,53 +1278,46 @@ namespace Configs {
             }
         }
 
-        // hijack
-        if (Configs::dataManager->settingsRepo->enable_dns_server && !ctx->forTest)
-        {
-            auto sniffRule = std::make_shared<RouteRule>();
-            sniffRule->action = "sniff";
-            sniffRule->inbound = {"hijack-dns"};
+        struct InjectedRules {
+            QJsonObject sniff;
+            QJsonObject resolve;
+            QJsonObject dnsHijack;
+            QJsonObject dnsInReject;
+            QJsonObject redirectSniff;
+        } injected;
 
-            auto redirRule = std::make_shared<RouteRule>();
-            redirRule->action = "hijack-dns";
-            redirRule->inbound = {"hijack-dns"};
-
-            routeChain->Rules.prepend(redirRule);
-            routeChain->Rules.prepend(sniffRule);
+        if (!routeChain->isRaw) {
+            injected.sniff = QJsonObject{{"action", "sniff"}};
+            if (!Configs::dataManager->settingsRepo->resolve_domain_strategy.isEmpty()) {
+                injected.resolve = QJsonObject{
+                    {"inbound", QJsonArray{"mixed-in", "tun-in"}},
+                    {"action", "resolve"},
+                    {"strategy", Configs::dataManager->settingsRepo->resolve_domain_strategy},
+                };
+            }
+            injected.dnsHijack = QJsonObject{
+                {"protocol", "dns"},
+                {"action", "hijack-dns"},
+            };
+            if (Configs::dataManager->settingsRepo->enable_redirect && !ctx->forTest) {
+                injected.redirectSniff = QJsonObject{
+                    {"inbound", QJsonArray{"hijack"}},
+                    {"action", "sniff"},
+                    {"override_destination", true},
+                };
+            }
         }
-        if (Configs::dataManager->settingsRepo->enable_redirect && !ctx->forTest) {
-            auto sniffRule = std::make_shared<RouteRule>();
-            sniffRule->action = "sniff";
-            sniffRule->sniffOverrideDest = true;
-            sniffRule->inbound = {"hijack"};
-            routeChain->Rules.prepend(sniffRule);
-        }
-
-        // sniff and resolve
-        if (!Configs::dataManager->settingsRepo->resolve_domain_strategy.isEmpty())
-        {
-            auto resolveRule = std::make_shared<RouteRule>();
-            resolveRule->action = "resolve";
-            resolveRule->strategy = Configs::dataManager->settingsRepo->resolve_domain_strategy;
-            resolveRule->inbound = {"mixed-in", "tun-in"};
-            routeChain->Rules.prepend(resolveRule);
-        }
-        if (Configs::dataManager->settingsRepo->sniffing_mode != SniffingMode::DISABLE)
-        {
-            auto sniffRule = std::make_shared<RouteRule>();
-            sniffRule->action = "sniff";
-            sniffRule->inbound = {"mixed-in", "tun-in"};
-            routeChain->Rules.prepend(sniffRule);
+        if (!ctx->forTest) {
+            injected.dnsInReject = QJsonObject{
+                {"inbound", "dns-in"},
+                {"action", "reject"},
+            };
         }
 
-        // rules: structured profiles serialize their RouteRules; raw profiles supply their
-        // own (id-translated) rules and get only the structural plumbing prepended below.
-        auto routeRules = routeChain->isRaw ? rawRouteObj.value("rules").toArray()
-                                            : routeChain->get_route_rules(false, routeDeps->outboundMap);
-        // See buildDNSSection: only carve the core's own egress out to `direct`
-        // via process_path when an extra core is in the chain. Otherwise we'd
-        // force the (Windows-heavy) process finder even though sing-box loopback
-        // is handled by auto_detect_interface and xray by its loopback bridges.
+        auto profileRules = routeChain->isRaw ? rawRouteObj.value("rules").toArray()
+                                              : routeChain->get_route_rules(false, routeDeps->outboundMap);
+
+        QJsonObject extraCoreDirect;
         if (!ctx->buildConfigResult->extraCoreData->path.isEmpty())
         {
             QJsonArray coreProcessPaths;
@@ -1333,26 +1326,11 @@ namespace Configs {
             extraCorePath.replace("/", "\\");
 #endif
             coreProcessPaths.append(extraCorePath);
-            routeRules.prepend(QJsonObject{
+            extraCoreDirect = QJsonObject{
                 {"action", "route"},
                 {"process_path", coreProcessPaths},
                 {"outbound", "direct"},
-            });
-        }
-        if (!ctx->forTest) {
-            routeRules.prepend(QJsonObject{
-                {"inbound", "dns-in"},
-                {"action", "reject"},
-            });
-            routeRules.prepend(QJsonObject{
-            {"action", "hijack-dns"},
-            {"protocol", "dns"},
-            {"inbound", "dns-in"},
-            });
-            routeRules.prepend(QJsonObject{
-                {"action", "sniff"},
-                {"inbound", "dns-in"},
-            });
+            };
         }
 
         // rulesets
@@ -1397,6 +1375,7 @@ namespace Configs {
             ctx->error = "xray to sing-box bridges count does not match ingress tags count";
             return;
         }
+        QJsonArray bridgeRules;
         int routeSingIngressIdx = 0;
         for (auto idx = 0; idx < ctx->xrayToSingBridges.size(); idx++) {
             auto bridgeConf = ctx->xrayToSingBridges[idx];
@@ -1409,12 +1388,11 @@ namespace Configs {
                 outboundTag = ctx->singIngressTags[routeSingIngressIdx];
                 routeSingIngressIdx++;
             }
-            QJsonObject rule = {
+            bridgeRules.append(QJsonObject{
                 {"inbound", inboundTag},
                 {"action", "route"},
                 {"outbound", outboundTag},
-            };
-            routeRules.prepend(rule);
+            });
         }
 
         // raw profiles bring their own rule_set definitions; merge them after ours.
@@ -1424,8 +1402,25 @@ namespace Configs {
 
         // apply
         const int defOut = routeChain->defaultOutboundID;
-        // block-by-default: append a catch-all reject so any unmatched connection is
-        // dropped. (DNS is left resolving as usual; it's the connection that's blocked.)
+
+        // Assemble the final rule list in priority order:
+        //   bridges -> extra-core carve-out -> our injected plumbing
+        //   (sniff, resolve, dns-in, dns hijack/redirect) -> profile rules
+        //   -> block-by-default catch-all.
+        // Appending in order (instead of the old prepend juggling) makes the
+        // precedence explicit.
+        QJsonArray routeRules;
+        for (const auto& r : bridgeRules) routeRules.append(r);
+        if (!extraCoreDirect.isEmpty()) routeRules.append(extraCoreDirect);
+        auto appendIfSet = [&routeRules](const QJsonObject& r) { if (!r.isEmpty()) routeRules.append(r); };
+        appendIfSet(injected.sniff);
+        appendIfSet(injected.resolve);
+        appendIfSet(injected.dnsHijack);
+        appendIfSet(injected.dnsInReject);
+        appendIfSet(injected.redirectSniff);
+        for (const auto& r : profileRules) routeRules.append(r);
+        // block-by-default: drop any unmatched connection. (DNS still resolves; it's
+        // the connection that's blocked.)
         if (!routeChain->isRaw && defOut == blockID) {
             routeRules.append(QJsonObject{{"action", "reject"}});
         }

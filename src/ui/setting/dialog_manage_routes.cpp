@@ -113,7 +113,6 @@ DialogManageRoutes::DialogManageRoutes(QWidget *parent) : QDialog(parent), ui(ne
             ui->dns_object->setPlainText(QJsonObject2QString(obj, false));
         }
     });
-    ui->sniffing_mode->setCurrentIndex(Configs::dataManager->settingsRepo->sniffing_mode);
     ui->ruleset_mirror->setCurrentIndex(Configs::dataManager->settingsRepo->ruleset_mirror);
     ui->default_domain_strategy->setCurrentText(Configs::dataManager->settingsRepo->default_domain_strategy);
     ui->domainStrategyCombo->setCurrentText(Configs::dataManager->settingsRepo->resolve_domain_strategy);
@@ -250,7 +249,6 @@ void DialogManageRoutes::accept() {
         return;
     }
 
-    Configs::dataManager->settingsRepo->sniffing_mode = ui->sniffing_mode->currentIndex();
     Configs::dataManager->settingsRepo->ruleset_mirror = ui->ruleset_mirror->currentIndex();
     Configs::dataManager->settingsRepo->resolve_domain_strategy = ui->domainStrategyCombo->currentText();
     Configs::dataManager->settingsRepo->default_domain_strategy = ui->default_domain_strategy->currentText();

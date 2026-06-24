@@ -20,14 +20,6 @@ namespace Configs {
         inline QStringList rejectMethods = {"default", "drop", "reply"};
     }
 
-    namespace SniffingMode {
-        enum SniffingMode {
-            DISABLE,
-            FOR_ROUTING,
-            FOR_DESTINATION,
-        };
-    }
-
     namespace CoreType {
         enum CoreType {
             SING_BOX,

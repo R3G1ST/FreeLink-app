@@ -162,7 +162,6 @@ namespace Configs {
         QString dns_final_out = "remote";
         QString resolve_domain_strategy = "";
         QString default_domain_strategy = "";
-        int sniffing_mode = SniffingMode::FOR_ROUTING;
         int ruleset_mirror = Mirrors::CLOUDFLARE;
 
         // Socks & HTTP Inbound
