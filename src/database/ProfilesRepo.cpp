@@ -115,6 +115,8 @@ namespace Configs {
             outbound = new Configs::trusttunnel();
         } else if (type == "anytls") {
             outbound = new Configs::anyTLS();
+        } else if (type == "mieru") {
+            outbound = new Configs::mieru();
         } else if (type == "shadowtls") {
             outbound = new Configs::shadowtls();
         } else if (type == "wireguard") {
@@ -300,6 +302,8 @@ namespace Configs {
             outbound = new Configs::trusttunnel();
         } else if (type == "anytls") {
             outbound = new Configs::anyTLS();
+        } else if (type == "mieru") {
+            outbound = new Configs::mieru();
         } else if (type == "shadowtls") {
             outbound = new Configs::shadowtls();
         } else if (type == "wireguard") {

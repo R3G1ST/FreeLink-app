@@ -28,6 +28,7 @@
 - Hysteria
 - Hysteria2
 - AnyTLS
+- Mieru
 - NaïveProxy
 - Juicity
 - TrustTunnel

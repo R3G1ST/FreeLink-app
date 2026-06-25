@@ -318,6 +318,13 @@ namespace Subscription {
             if (!ok) return;
         }
 
+        // Mieru
+        if (str.startsWith("mieru://")) {
+            ent = Configs::ProfilesRepo::NewProfile("mieru");
+            auto ok = ent->Mieru()->ParseFromLink(str);
+            if (!ok) return;
+        }
+
         // Hysteria
         if (str.startsWith("hysteria://") || str.startsWith("hysteria2://") || str.startsWith("hy2://")) {
             ent = Configs::ProfilesRepo::NewProfile("hysteria");
@@ -461,6 +468,13 @@ namespace Subscription {
             if (out["type"] == "anytls") {
                 ent = Configs::ProfilesRepo::NewProfile("anytls");
                 auto ok = ent->AnyTLS()->ParseFromJson(out);
+                if (!ok) continue;
+            }
+
+            // Mieru
+            if (out["type"] == "mieru") {
+                ent = Configs::ProfilesRepo::NewProfile("mieru");
+                auto ok = ent->Mieru()->ParseFromJson(out);
                 if (!ok) continue;
             }
 
