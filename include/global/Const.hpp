@@ -64,10 +64,11 @@ namespace Configs {
 
     namespace Xray {
         inline QStringList XrayLogLevels = {"debug", "info", "warning", "error", "none"};
-        inline QStringList XrayVlessPreferenceString = {"XHTTP Only", "XHTTP And Reality"};
+        inline QStringList XrayVlessPreferenceString = {"XHTTP Only", "XHTTP And Reality", "All VLESS"};
         enum XrayVlessPreference {
             XhttpOnly,
             XhttpAndReality,
+            AllVLESS,
         };
     }
 } // namespace Configs
