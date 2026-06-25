@@ -608,6 +608,28 @@ namespace Configs {
         return true;
     }
 
+    void ProfilesRepo::SaveTrafficBatch(const QList<std::shared_ptr<Profile>>& profiles) {
+        QList<std::shared_ptr<Profile>> valid;
+        for (const auto& p : profiles) {
+            if (p && p->id >= 0) valid.append(p);
+        }
+        if (valid.isEmpty()) return;
+        QMutexLocker locker(&mutex);
+        try {
+            db.execThrow("BEGIN IMMEDIATE");
+            for (const auto& p : valid) {
+                db.execThrow("UPDATE profiles SET traffic_dl = ?, traffic_up = ? WHERE id = ?",
+                             static_cast<long long>(p->traffic_downlink),
+                             static_cast<long long>(p->traffic_uplink),
+                             p->id);
+            }
+            db.execThrow("COMMIT");
+        } catch (std::exception& e) {
+            try { db.execThrow("ROLLBACK"); } catch (...) {}
+            NotifyError("SaveTrafficBatch", e);
+        }
+    }
+
     void ProfilesRepo::SaveBatch(const QList<std::shared_ptr<Profile>>& profiles) {
         runOnNewThread([=, this] {
             QList<std::shared_ptr<Profile>> valid;

@@ -509,34 +509,17 @@ void MainWindow::speedtest_current_group(const QList<int>& profileIDs, bool test
 void MainWindow::creditSpeedtestTraffic(const std::shared_ptr<Configs::Profile>& profile, const QString& tag, qint64 curUp, qint64 curDown)
 {
     if (profile == nullptr || tag.isEmpty()) return;
-    // Honour the master traffic switch: when stats are disabled the looper records
-    // nothing, so neither do we (matches TrafficLooper::UpdateAll).
     if (Configs::dataManager->settingsRepo->disable_traffic_stats) return;
-    // The live micro-poll and the final reconciliation can briefly overlap, so
-    // keep the baseline read/update and all crediting under one lock.
     QMutexLocker lk(&speedtestCreditMu_);
     auto& base = speedtestCredited_[tag];
-    // Counters are cumulative per test; a re-test of the same tag restarts from
-    // 0, so a drop below the last value means a fresh test — count it from 0 in
-    // that case rather than going negative.
     const qint64 dUp = curUp >= base.first ? curUp - base.first : curUp;
     const qint64 dDown = curDown >= base.second ? curDown - base.second : curDown;
     base = qMakePair(curUp, curDown);
     if (dUp <= 0 && dDown <= 0) return;
 
-    // Time-series stats: speed tests bypass the clash tracker, so the looper never
-    // sees this traffic — record it here. Per-config goes to the tested profile;
-    // per-app to a synthetic "Speedtest" app so test overhead shows up distinctly
-    // in the dashboard instead of being attributed to a real process.
     Stats::trafficStatsManager->AddConfigDelta(profile->id, dUp, dDown);
     Stats::trafficStatsManager->AddAppDelta(Stats::SPEEDTEST_APP_NAME, "", dUp, dDown);
 
-    // Legacy per-profile total. Credited for both a selected-profile test and a
-    // current-instance test: the bytes bypass the clash tracker either way, so
-    // the looper never counts them and a test must show up in the profile's usage
-    // total. For a current-instance test `profile` is the running profile, which
-    // is the same object the looper credits (shared via the repo identity map),
-    // so the additions accumulate correctly rather than racing each other away.
     profile->traffic_uplink += dUp;
     profile->traffic_downlink += dDown;
     Configs::dataManager->profilesRepo->SaveTraffic(profile);
@@ -555,9 +538,6 @@ void MainWindow::querySpeedtest(const QMap<QString, int>& tag2entID, bool testCu
     {
         return;
     }
-    // Enriched micro-poll: credit the test bytes consumed since the last poll.
-    // Speed tests bypass the clash tracker, so this is one of the two places their
-    // traffic is recorded (the other is the final reconciliation in runSpeedTest).
     creditSpeedtestTraffic(profile, QString::fromStdString(res.result.value().outbound_tag.value()),
                            res.result.value().ul_bytes.value(), res.result.value().dl_bytes.value());
     runOnUiThread([=, this]
@@ -681,12 +661,6 @@ void MainWindow::runSpeedTest(const QString& config, const QString& xrayConfig, 
             continue;
         }
 
-        // Final reconciliation: credit any test bytes the live micro-poll hasn't
-        // captured yet — the tail after the last poll, very short tests, and an
-        // aborted test's partial bytes (a cancelled result still carries the bytes
-        // counted up to the abort). Done before the cancelled check so aborted
-        // tests still count. Speed tests bypass the clash tracker, so this and the
-        // micro-poll are the only places their traffic is counted.
         creditSpeedtestTraffic(ent, QString::fromStdString(res.outbound_tag.value()),
                                res.ul_bytes.value(), res.dl_bytes.value());
 
@@ -731,10 +705,6 @@ bool MainWindow::set_system_dns(bool set, bool save_set) {
     return true;
 }
 
-// Fired by m_defaultInterfaceWatch while a profile with an interface-bound xray
-// egress is running. The bind name (sockopt.interface) is baked at build time,
-// so if the OS default route moves to a different NIC we must rebuild+restart to
-// re-bake it. profile_start re-resolves the interface and re-arms this watch.
 void MainWindow::checkDefaultInterfaceChange() {
     if (running == nullptr || m_boundEgressInterface.isEmpty()) {
         if (m_defaultInterfaceWatch) m_defaultInterfaceWatch->stop();
@@ -743,14 +713,10 @@ void MainWindow::checkDefaultInterfaceChange() {
     }
     bool ok = false;
     QString cur = defaultClient->GetDefaultInterface(&ok);
-    // Unchanged, or a transient failure / no-route: keep the current binding.
     if (!ok || cur.isEmpty() || cur == m_boundEgressInterface) {
         m_ifcChangeStreak = 0;
         return;
     }
-    // Require two consecutive differing reads before acting, so a brief handoff
-    // (old NIC down before the new one becomes the default route) doesn't thrash
-    // profile_start.
     if (++m_ifcChangeStreak < 2) return;
 
     m_ifcChangeStreak = 0;
@@ -982,7 +948,9 @@ void MainWindow::profile_stop(bool crash, bool block, bool manual) {
         Stats::trafficLooper->loop_mutex.lock();
         Stats::trafficLooper->UpdateAll();
         Stats::trafficLooper->loop_mutex.unlock();
-        // Persist the final partial minute bucket captured by the UpdateAll above.
+        // Flush the final per-profile totals (only persisted every few seconds
+        // during the session) and the partial minute bucket before going down.
+        Stats::trafficLooper->PersistTraffic();
         Stats::trafficStatsManager->Flush();
 
         QMessageBox* restartMsgbox;

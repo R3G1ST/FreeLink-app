@@ -15,6 +15,11 @@ namespace Stats
     // tiny byte delta by a tiny interval and produce a misleading spike.
     static constexpr qint64 kSpeedSampleMinMs = 500;
 
+    // Poll cadence: 1 Hz while the connections view is visible, relaxed otherwise
+    // (off-view polls only keep the per-app traffic stats sampled).
+    static constexpr unsigned long kActivePollMs = 1000;
+    static constexpr unsigned long kRelaxedPollMs = 5000;
+
     ConnectionLister* connection_lister = new ConnectionLister();
 
     ConnectionLister::ConnectionLister()
@@ -35,13 +40,33 @@ namespace Stats
         while (true)
         {
             if (stop) return;
-            QThread::msleep(1000);
 
+            {
+                // Sleep until the next poll, but wake immediately when the view
+                // opens (SetInView) or we're shutting down (stopLoop). 1 Hz while
+                // visible; relaxed otherwise.
+                QMutexLocker wlk(&waitMu_);
+                waitCond_.wait(&waitMu_, inView_.load() ? kActivePollMs : kRelaxedPollMs);
+            }
+
+            if (stop) return;
             if (suspend || !Configs::dataManager->settingsRepo->enable_stats) continue;
 
             mu.lock();
             update();
             mu.unlock();
+        }
+    }
+
+    void ConnectionLister::SetInView(bool inView)
+    {
+        const bool was = inView_.exchange(inView);
+        if (inView && !was)
+        {
+            // Became visible: wake the loop so it switches to 1 Hz and refreshes
+            // now instead of waiting out the remaining relaxed sleep.
+            QMutexLocker wlk(&waitMu_);
+            waitCond_.wakeAll();
         }
     }
 
@@ -273,6 +298,8 @@ namespace Stats
     void ConnectionLister::stopLoop()
     {
         stop = true;
+        QMutexLocker wlk(&waitMu_);
+        waitCond_.wakeAll(); // break the poll sleep so the loop exits promptly
     }
 
     void ConnectionLister::setSort(const ConnectionSort newSort)

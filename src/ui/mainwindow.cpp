@@ -378,7 +378,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->stats_widget->tabBar(), &QTabBar::currentChanged, this, [=,this](int index)
     {
         Configs::dataManager->settingsRepo->stats_tab = ui->stats_widget->tabBar()->currentIndex();
+        syncConnectionViewState();
     });
+    // Seed the lister's view state from the restored tab selection.
+    syncConnectionViewState();
     connect(ui->connections->horizontalHeader(), &QHeaderView::sectionClicked, this, [=,this](int index)
     {
             Stats::ConnectionSort sortType;
@@ -1163,7 +1166,26 @@ void MainWindow::changeEvent(QEvent *event) {
         event->type() == QEvent::StyleChange) {
         scheduleProxyListRefresh();
     }
+    if (event->type() == QEvent::WindowStateChange) {
+        syncConnectionViewState();
+    }
     QMainWindow::changeEvent(event);
+}
+
+void MainWindow::showEvent(QShowEvent *event) {
+    QMainWindow::showEvent(event);
+    syncConnectionViewState();
+}
+
+void MainWindow::hideEvent(QHideEvent *event) {
+    QMainWindow::hideEvent(event);
+    syncConnectionViewState();
+}
+
+void MainWindow::syncConnectionViewState() {
+    const bool inView = isVisible() && !isMinimized()
+        && ui->stats_widget->currentWidget() == ui->connections_tab;
+    Stats::connection_lister->SetInView(inView);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
@@ -1227,13 +1249,6 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-// Rebuilds the tray "Select Server" menu in place (non-macOS). It is a tiny
-// navigable panel with two views driven by trayServerGroupId / trayServerPage:
-// the group list, and a paginated profile list for the opened group. Navigation
-// items (group / back / previous / more) carry kStayOpenMenuNavProperty so
-// StayOpenMenu keeps the menu open; their handlers only mutate state and defer
-// the actual rebuild to the event loop, because clearing the menu here would
-// delete the very action being triggered.
 void MainWindow::rebuildTrayServerMenu() {
     if (!trayServerMenu) return;
     trayServerMenu->clear();

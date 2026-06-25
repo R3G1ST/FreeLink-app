@@ -43,6 +43,11 @@ namespace Stats {
 
         void Loop();
 
+        // Persist every active profile's legacy traffic total to disk in one
+        // batched transaction. Called on a slow cadence from the loop and once on
+        // stop/exit; runs synchronously on the caller's thread (no thread spawn).
+        void PersistTraffic();
+
         void SetChainGroups(const QList<Configs::TrafficChainGroup>& configGroups);
 
     private:

@@ -18,6 +18,10 @@ namespace Stats {
     TrafficLooper *trafficLooper = new TrafficLooper;
     QElapsedTimer elapsedTimer;
 
+    namespace {
+        constexpr int kTrafficSaveIntervalSecs = 10;
+    }
+
     void TrafficLooper::UpdateAll() {
         if (Configs::dataManager->settingsRepo->disable_traffic_stats) {
             return;
@@ -72,6 +76,7 @@ namespace Stats {
 
     void TrafficLooper::Loop() {
         elapsedTimer.start();
+        int secs_since_save = 0;
         while (true) {
             QThread::msleep(1000); // refresh every one second
 
@@ -109,6 +114,11 @@ namespace Stats {
 
             loop_mutex.unlock();
 
+            if (++secs_since_save >= kTrafficSaveIntervalSecs) {
+                secs_since_save = 0;
+                PersistTraffic();
+            }
+
             // post to UI
             runOnUiThread([=,this] {
                 auto m = GetMainWindow();
@@ -119,10 +129,25 @@ namespace Stats {
                 for (const auto& group : groups) {
                     for (const auto& profile : group.profiles) {
                         m->refresh_proxy_list({profile->id});
-                        Configs::dataManager->profilesRepo->SaveTraffic(profile);
                     }
                 }
             });
+        }
+    }
+
+    void TrafficLooper::PersistTraffic() {
+        QList<std::shared_ptr<Configs::Profile>> all;
+        {
+            QMutexLocker lk(&loop_mutex);
+            for (const auto& group : groups) {
+                for (const auto& profile : group.profiles) {
+                    if (profile && profile->id >= 0) all.append(profile);
+                }
+            }
+        }
+        if (all.isEmpty()) return;
+        if (Configs::dataManager && Configs::dataManager->profilesRepo) {
+            Configs::dataManager->profilesRepo->SaveTrafficBatch(all);
         }
     }
 

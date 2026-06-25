@@ -1,9 +1,11 @@
 #pragma once
 #include <QMutex>
+#include <QWaitCondition>
 #include <QString>
 #include <QHash>
 #include <QSet>
 #include <QPair>
+#include <atomic>
 
 namespace Stats
 {
@@ -53,6 +55,12 @@ namespace Stats
 
         void ForceUpdate();
 
+        // Tell the lister whether its connections view is currently visible. While
+        // it is, the loop polls at 1 Hz; otherwise it relaxes to a slower cadence
+        // (off-view polling only feeds the per-app traffic stats). Switching to
+        // visible wakes the loop immediately so the table starts refreshing at once.
+        void SetInView(bool inView);
+
         void stopLoop();
 
         void setSort(ConnectionSort newSort);
@@ -76,6 +84,13 @@ namespace Stats
         QHash<QString, SpeedSample> speedSamples_;
 
         QMutex mu;
+
+        // Interruptible poll sleep: the loop waits on waitCond_ for the current
+        // interval; SetInView(true) / stopLoop() wake it early. inView_ selects the
+        // active (1 Hz) vs relaxed cadence.
+        QMutex waitMu_;
+        QWaitCondition waitCond_;
+        std::atomic<bool> inView_{false};
 
         bool stop = false;
 

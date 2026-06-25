@@ -306,7 +306,17 @@ private:
 
     void changeEvent(QEvent *event) override;
 
+    void showEvent(QShowEvent *event) override;
+
+    void hideEvent(QHideEvent *event) override;
+
     void resizeEvent(QResizeEvent *event) override;
+
+    // Tell the connection lister whether its tab is actually on screen (stats tab
+    // selected, window neither minimized nor hidden to tray) so it can drop to a
+    // relaxed poll cadence when nobody is looking. Recomputed on tab/visibility
+    // changes.
+    void syncConnectionViewState();
 
     void dragEnterEvent(QDragEnterEvent *event);
 
