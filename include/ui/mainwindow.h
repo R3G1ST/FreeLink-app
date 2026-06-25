@@ -43,6 +43,8 @@ namespace Configs_sys {
     class CoreProcess;
 }
 
+class StayOpenMenu;
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
     class MainWindow;
@@ -169,8 +171,17 @@ private:
     Ui::MainWindow *ui;
     ProfilesTableModel *profilesTableModel = nullptr;
     QSystemTrayIcon *tray;
-    QMenu *trayServerMenu = nullptr;
-    int trayServerPage = 0;
+    QMenu *trayMenu = nullptr;    // tray context menu (parent of trayServerMenu)
+    StayOpenMenu *trayServerMenu = nullptr;
+    int trayServerPage = 0;       // current profile page within the open group
+    int trayServerGroupId = -1;   // -1 = showing the group list; else the group whose profiles are shown
+    // Rebuilds the tray "Select Server" menu in place from trayServerGroupId/trayServerPage
+    // (click-to-navigate, paginated). Non-macOS only; macOS uses nested submenus.
+    void rebuildTrayServerMenu();
+    // Keeps the (already visible) tray server menu within the screen's available
+    // area after an in-place rebuild, so a taller page can't spill its bottom
+    // items off-screen / under the taskbar where they aren't clickable.
+    void fitTrayServerMenuOnScreen();
     QShortcut *shortcut_esc = new QShortcut(QKeySequence::Cancel, this);
     //
     QThreadPool *parallelCoreCallPool = new QThreadPool(this);
