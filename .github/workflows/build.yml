@@ -152,7 +152,7 @@ jobs:
             qt_version: "6.11.1"
             target: arm64
             dest_suffix: darwin-arm64
-          - platform: macos-latest
+          - platform: macos-15
             qt_version: "6.4.3"
             target: x86_64
             dest_suffix: darwinlegacy-amd64
@@ -239,7 +239,7 @@ jobs:
           ./script/deploy_linux64_system_qt.sh
       - name: macOS - Generate MakeFile and Build
         shell: bash
-        if: matrix.platform == 'macos-latest'
+        if: contains( matrix.platform, 'macos' )
         run: |
           mkdir build
           cd build
