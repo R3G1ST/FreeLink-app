@@ -1726,6 +1726,7 @@ void MainWindow::prepare_exit()
         core_process->Kill();
     }, DS_cores, true);
     HideWindow(this);
+    tray->hide();
 
     mu_exit.unlock();
     qDebug() << "prepare exit done!";
