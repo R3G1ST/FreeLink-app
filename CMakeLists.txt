@@ -214,6 +214,7 @@ set(PROJECT_SOURCES
 
         src/ui/stats/dialog_traffic_stats.cpp
         include/ui/stats/dialog_traffic_stats.h
+        include/ui/stats/dialog_traffic_stats.ui
         src/ui/stats/TrafficChartWidget.cpp
         include/ui/stats/TrafficChartWidget.h
 
