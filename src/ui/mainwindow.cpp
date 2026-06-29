@@ -365,6 +365,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->toolButton_routing->setMenu(ui->menuRouting_Menu);
     ui->toolButton_tools->setMenu(ui->menuTools);
     ui->menubar->setVisible(false);
+    ui->actionTraffic_Stats->setVisible(!Configs::dataManager->settingsRepo->disable_traffic_aggregation);
     connect(ui->actionTraffic_Stats, &QAction::triggered, this, [=]() {
         USE_DIALOG(DialogTrafficStats)
     });
@@ -1533,6 +1534,7 @@ void MainWindow::dialog_message_impl(MwMessage cmd, const QStringList &args) {
     switch (cmd) {
     case MwMessage::UpdateSettings: {
         updateLogFilterFields();
+        ui->actionTraffic_Stats->setVisible(!settings->disable_traffic_aggregation);
         if (changed(MwArg::TrayIcon)) {
             icon_status = -1;
         }
