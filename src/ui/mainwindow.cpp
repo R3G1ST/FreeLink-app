@@ -5,6 +5,7 @@
 #include <ranges>
 
 #include "include/configs/sub/GroupUpdater.hpp"
+#include "include/configs/sub/RouteUpdater.hpp"
 #include "include/sys/Process.hpp"
 #include "include/sys/AutoRun.hpp"
 #include "include/sys/UrlScheme.hpp"
@@ -1104,7 +1105,10 @@ connect(ui->actionRestart_Proxy, &QAction::triggered, this, [=,this] {
         TM_auto_update_subsctiption->stop();
         if (m >= 30) TM_auto_update_subsctiption->start(m * 60 * 1000);
     };
-    connect(TM_auto_update_subsctiption, &QTimer::timeout, this, [&] { UI_update_all_groups(true); });
+    connect(TM_auto_update_subsctiption, &QTimer::timeout, this, [&] {
+        UI_update_all_groups(true);
+        UI_update_all_remote_routes(true);
+    });
     TM_auto_update_subsctiption_Reset_Minute(Configs::dataManager->settingsRepo->sub_auto_update);
 
     if (!Configs::dataManager->settingsRepo->flag_tray) show();
@@ -1475,6 +1479,11 @@ void MainWindow::handle_deeplink_impl(const QString &url) {
         return;
     }
 
+    if (cmd.compare("remoteroute", Qt::CaseInsensitive) == 0) {
+        handle_add_remote_routes(url);
+        return;
+    }
+
     MW_show_log(tr("Ignored deeplink with unknown command: %1").arg(cmd));
 }
 
@@ -1497,6 +1506,48 @@ void MainWindow::handle_import_route(const QString &url) {
     }
 
     Configs::dataManager->routesRepo->AddRouteProfile(profile);
+}
+
+void MainWindow::handle_add_remote_routes(const QString &url) {
+    bool wasRemoteRouteLink = false;
+    QString error;
+    auto profiles = Configs::RouteProfile::FromRemoteRoutesLink(url, &wasRemoteRouteLink, &error);
+    if (profiles.isEmpty()) {
+        MessageBoxWarning(tr("Add remote routing profiles"),
+                          error.isEmpty() ? tr("The link did not contain any valid remote routing profiles.") : error);
+        return;
+    }
+
+    ActivateWindow(this);
+
+    QString prompt = tr("Add these remote routing profiles?") + "\n";
+    for (int i = 0; i < profiles.size(); ++i) {
+        prompt += QString("\n%1. %2  (%3: %4)")
+                      .arg(i + 1)
+                      .arg(profiles[i]->remoteURL, tr("auto update"), profiles[i]->autoUpdate ? tr("On") : tr("Off"));
+    }
+    if (QMessageBox::question(GetMessageBoxParent(), tr("Add remote routing profiles"), prompt) != QMessageBox::StandardButton::Yes) {
+        return;
+    }
+
+    for (auto &profile : profiles) {
+        Configs::dataManager->routesRepo->AddRouteProfile(profile);
+    }
+
+    // Fetch the freshly added profiles so they have rules right away. Runs off the UI thread and
+    // persists each result; a failed fetch just leaves an empty, updatable profile.
+    const auto added = profiles;
+    runOnNewThread([added] {
+        int ok = 0;
+        for (const auto &p : added) {
+            QString warnings;
+            const QString err = RouteUpdate::UpdateProfile(p, &warnings);
+            Configs::dataManager->routesRepo->Save(p);
+            if (err.isEmpty()) ok++;
+            else MW_show_log(QObject::tr("Remote routing profile %1 failed: %2").arg(p->remoteURL, err));
+        }
+        MW_show_log(QObject::tr("Added remote routing profiles: %1 of %2 fetched").arg(ok).arg(added.size()));
+    });
 }
 
 void MainWindow::handle_addsub(const QString &url, const QString &name, bool autoUpdate) {
