@@ -65,6 +65,7 @@ namespace Configs {
             {"dns_disable_cache", &dns_disable_cache},
             {"dns_disable_expire", &dns_disable_expire},
             {"dns_reverse_mapping", &dns_reverse_mapping},
+            {"disable_private_range_bypass", &disable_private_range_bypass},
         };
 
         intMap = {
