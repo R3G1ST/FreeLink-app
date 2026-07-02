@@ -367,6 +367,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->toolButton_preferences->setMenu(ui->menu_preferences);
     ui->toolButton_routing->setMenu(ui->menuRouting_Menu);
     ui->toolButton_tools->setMenu(ui->menuTools);
+    ui->toolButton_program->installEventFilter(this);
     ui->menubar->setVisible(false);
     ui->actionTraffic_Stats->setVisible(!Configs::dataManager->settingsRepo->disable_traffic_aggregation);
     connect(ui->actionTraffic_Stats, &QAction::triggered, this, [=]() {
@@ -3344,6 +3345,12 @@ void MainWindow::on_tabWidget_customContextMenuRequested(const QPoint &p) {
 // eventFilter
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
+    if (event->type() == QEvent::Resize && obj == ui->toolButton_program) {
+        const int h = ui->toolButton_program->height();
+        if (h > 0 && ui->toolButton_startstop->height() != h) {
+            ui->toolButton_startstop->setFixedSize(h, h);
+        }
+    }
     // Pin the "Select Server" submenu when its row is clicked (a hover only peeks).
     // The parent item has a submenu so it never emits triggered(); instead we map
     // the release position onto the tray menu and check it landed on that row.
