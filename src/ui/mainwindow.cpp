@@ -6,6 +6,7 @@
 
 #include "include/configs/sub/GroupUpdater.hpp"
 #include "include/configs/sub/RouteUpdater.hpp"
+#include "include/global/PeriodicRunner.hpp"
 #include "include/sys/Process.hpp"
 #include "include/sys/AutoRun.hpp"
 #include "include/sys/UrlScheme.hpp"
@@ -1099,17 +1100,36 @@ connect(ui->actionRestart_Proxy, &QAction::triggered, this, [=,this] {
     m_defaultInterfaceWatch->setInterval(3000);
     connect(m_defaultInterfaceWatch, &QTimer::timeout, this, [this] { checkDefaultInterfaceChange(); });
 
-    // auto update timer
-    TM_auto_update_subsctiption = new QTimer;
-    TM_auto_update_subsctiption_Reset_Minute = [&](int m) {
-        TM_auto_update_subsctiption->stop();
-        if (m >= 30) TM_auto_update_subsctiption->start(m * 60 * 1000);
-    };
-    connect(TM_auto_update_subsctiption, &QTimer::timeout, this, [&] {
-        UI_update_all_groups(true);
-        UI_update_all_remote_routes(true);
-    });
-    TM_auto_update_subsctiption_Reset_Minute(Configs::dataManager->settingsRepo->sub_auto_update);
+    // Periodic auto-update jobs. The runner persists each job's last-run time and re-runs
+    // it once its own interval has elapsed, so closing the app past the interval (or the
+    // machine sleeping) still triggers an update on the next launch instead of resetting
+    // the clock. Subscriptions and remote routing profiles each carry their own interval.
+    {
+        auto* runner = Throne::PeriodicRunner::instance();
+        // Settings store the interval sign-encoded (negative = disabled); < 30 min is
+        // treated as off, matching the "invalid if less than 30" UI hint.
+        const auto minutesOf = [](int v) { return v >= 30 ? v : 0; };
+        runner->Add({
+            tr("subscriptions"),
+            [minutesOf] { return minutesOf(Configs::dataManager->settingsRepo->sub_auto_update); },
+            [] { return Configs::dataManager->settingsRepo->sub_auto_update_last; },
+            [](qint64 t) {
+                Configs::dataManager->settingsRepo->sub_auto_update_last = t;
+                Configs::dataManager->settingsRepo->Save();
+            },
+            [] { UI_update_all_groups(true); },
+        });
+        runner->Add({
+            tr("routing profiles"),
+            [minutesOf] { return minutesOf(Configs::dataManager->settingsRepo->route_auto_update); },
+            [] { return Configs::dataManager->settingsRepo->route_auto_update_last; },
+            [](qint64 t) {
+                Configs::dataManager->settingsRepo->route_auto_update_last = t;
+                Configs::dataManager->settingsRepo->Save();
+            },
+            [] { UI_update_all_remote_routes(true); },
+        });
+    }
 
     if (!Configs::dataManager->settingsRepo->flag_tray) show();
 
@@ -1614,6 +1634,9 @@ void MainWindow::dialog_message_impl(MwMessage cmd, const QStringList &args) {
             AutoRun_FixPrivilegeIfNeeded();
         }
         auto suggestRestartProxy = settings->Save();
+        // Pick up any changed auto-update interval immediately instead of waiting for the
+        // next poll (e.g. the user just enabled or shortened a job).
+        Throne::PeriodicRunner::instance()->CheckNow();
         if (changed(MwArg::Route)) {
             settings->Save();
             suggestRestartProxy = true;
