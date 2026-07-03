@@ -200,7 +200,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     // setup log
     ui->splitter->restoreState(DecodeB64IfValid(Configs::dataManager->settingsRepo->splitter_state));
-    new SyntaxHighlighter(themeUsesDarkLog(Configs::dataManager->settingsRepo->theme), qvLogDocument);
+    setLogHighlighter(themeUsesDarkLog(Configs::dataManager->settingsRepo->theme));
     qvLogDocument->setUndoRedoEnabled(false);
     qvLogDocument->setMaximumBlockCount(Configs::dataManager->settingsRepo->max_log_line);
     ui->masterLogBrowser->setUndoRedoEnabled(false);
@@ -213,12 +213,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     connect(qApp->styleHints(), &QStyleHints::colorSchemeChanged, this, [=,this](const Qt::ColorScheme& scheme) {
-        new SyntaxHighlighter(scheme == Qt::ColorScheme::Dark, qvLogDocument);
+        setLogHighlighter(scheme == Qt::ColorScheme::Dark);
         themeManager->ApplyTheme(Configs::dataManager->settingsRepo->theme, true);
     });
 #endif
     connect(themeManager, &ThemeManager::themeChanged, this, [=,this](const QString& theme){
-        new SyntaxHighlighter(themeUsesDarkLog(theme), qvLogDocument);
+        setLogHighlighter(themeUsesDarkLog(theme));
         scheduleProxyListRefresh();
     });
     MW_show_log = [=,this](const QString &log) {
@@ -1152,6 +1152,14 @@ void MainWindow::applyLogBrowserFont() {
     if (pt <= 0) pt = Configs::dataManager->settingsRepo->font_size;
     if (pt > 0) logFont.setPointSize(pt);
     ui->masterLogBrowser->setFont(logFont);
+}
+
+void MainWindow::setLogHighlighter(bool darkMode) {
+    // A QSyntaxHighlighter attaches itself to the document and is never evicted
+    // by constructing another, so recreating one per theme change would stack
+    // them up and re-run every rule on every insert. Delete the old one first.
+    delete logHighlighter;
+    logHighlighter = new SyntaxHighlighter(darkMode, qvLogDocument);
 }
 
 void MainWindow::changeEvent(QEvent *event) {
@@ -3175,60 +3183,76 @@ void MainWindow::log_process_loop() {
         while (logQueue.isEmpty()) {
             logWaiter.wait(&logMutex);
         }
-        auto logLines = logQueue.dequeue().split("\n");
+        // Drain the whole queue and snapshot the filter fields in one locked,
+        // O(1) step, then release the lock before doing the filtering work. A
+        // burst of messages becomes a single UI append instead of one per line,
+        // and producers calling append_log() aren't blocked on the regex work.
+        QQueue<QString> pending;
+        pending.swap(logQueue);
+        const LogFilter filter{
+            Configs::dataManager->settingsRepo->log_enable_include,
+            Configs::dataManager->settingsRepo->log_enable_exclude,
+            includeKeywords, excludeKeywords, includeCombined, excludeCombined,
+        };
+        logMutex.unlock();
 
         QString batchToPrint;
-        for (const auto& logLine : logLines) {
-            if (should_print_log(logLine)) {
-                batchToPrint += logLine + "\n";
+        for (const auto& entry : pending) {
+            for (const auto& logLine : entry.split('\n')) {
+                if (should_print_log(logLine, filter)) {
+                    batchToPrint += logLine;
+                    batchToPrint += '\n';
+                }
             }
         }
-        logMutex.unlock();
 
         if (!batchToPrint.isEmpty()) {
             QString trimmedBatch = batchToPrint.trimmed();
             runOnUiThread([trimmedBatch = std::move(trimmedBatch), this] {
                 auto bar = ui->masterLogBrowser->verticalScrollBar();
-                auto layout = qvLogDocument->documentLayout();
-                // Anchor to the block at the top of the viewport; if trim shifts its
-                // document-Y afterwards, we replay the original sub-block offset.
-                QTextBlock anchorBlock = ui->masterLogBrowser->cursorForPosition(QPoint(0, 0)).block();
-                int viewportOffset = bar->value() - static_cast<int>(layout->blockBoundingRect(anchorBlock).y());
-                FastAppendTextDocument(trimmedBatch, qvLogDocument);
                 if (Configs::dataManager->settingsRepo->log_auto_scroll) {
+                    FastAppendTextDocument(trimmedBatch, qvLogDocument);
                     bar->setValue(bar->maximum());
-                } else if (anchorBlock.isValid()) {
-                    int newY = static_cast<int>(layout->blockBoundingRect(anchorBlock).y());
-                    bar->setValue(newY + viewportOffset);
+                } else {
+                    auto layout = qvLogDocument->documentLayout();
+                    // Anchor to the block at the top of the viewport; if the append
+                    // shifts its document-Y, replay the original sub-block offset.
+                    QTextBlock anchorBlock = ui->masterLogBrowser->cursorForPosition(QPoint(0, 0)).block();
+                    int viewportOffset = bar->value() - static_cast<int>(layout->blockBoundingRect(anchorBlock).y());
+                    FastAppendTextDocument(trimmedBatch, qvLogDocument);
+                    if (anchorBlock.isValid()) {
+                        int newY = static_cast<int>(layout->blockBoundingRect(anchorBlock).y());
+                        bar->setValue(newY + viewportOffset);
+                    }
                 }
             });
         }
     }
 }
 
-bool MainWindow::should_print_log(const QString &log) {
-    if (log.trimmed().isEmpty()) return false;
+bool MainWindow::should_print_log(const QString &log, const LogFilter &filter) {
+    if (QStringView(log).trimmed().isEmpty()) return false;
     bool result = true;
-    if (Configs::dataManager->settingsRepo->log_enable_include) {
+    if (filter.enableInclude) {
         result = false;
-        for (const auto& includeKeyword : includeKeywords) {
+        for (const auto& includeKeyword : filter.includeKeywords) {
             if (log.contains(includeKeyword)) {
                 result = true;
                 break;
             }
         }
-        if (!includeCombined.pattern().isEmpty() && includeCombined.match(log).hasMatch()) {
+        if (!result && !filter.includeCombined.pattern().isEmpty() && filter.includeCombined.match(log).hasMatch()) {
             result = true;
         }
     }
-    if (result && Configs::dataManager->settingsRepo->log_enable_exclude) {
-        for (const auto& excludeKeyword : excludeKeywords) {
+    if (result && filter.enableExclude) {
+        for (const auto& excludeKeyword : filter.excludeKeywords) {
             if (log.contains(excludeKeyword)) {
                 result = false;
                 break;
             }
         }
-        if (!excludeCombined.pattern().isEmpty() && excludeCombined.match(log).hasMatch()) {
+        if (result && !filter.excludeCombined.pattern().isEmpty() && filter.excludeCombined.match(log).hasMatch()) {
             result = false;
         }
     }

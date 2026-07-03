@@ -47,6 +47,8 @@ namespace Configs_sys {
 
 class StayOpenMenu;
 
+namespace Qv2ray::ui { class SyntaxHighlighter; }
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
     class MainWindow;
@@ -261,14 +263,32 @@ private:
     QMutex logMutex;
     QQueue<QString> logQueue;
     QWaitCondition logWaiter;
+    Qv2ray::ui::SyntaxHighlighter *logHighlighter = nullptr;
+
+    // Immutable snapshot of the log filter fields. The log thread copies these
+    // under logMutex (Qt containers are copy-on-write, so it's O(1)) and then
+    // filters without holding the lock, so producers calling append_log() are
+    // never blocked on the regex/keyword work.
+    struct LogFilter {
+        bool enableInclude = false;
+        bool enableExclude = false;
+        QStringList includeKeywords;
+        QStringList excludeKeywords;
+        QRegularExpression includeCombined;
+        QRegularExpression excludeCombined;
+    };
 
     void append_log(const QString &log);
 
     void log_process_loop();
 
-    bool should_print_log(const QString &log);
+    bool should_print_log(const QString &log, const LogFilter &filter);
 
     void updateLogFilterFields();
+
+    // (Re)installs the log syntax highlighter, deleting any previous one so
+    // highlighters don't stack up (and keep re-highlighting) on theme changes.
+    void setLogHighlighter(bool darkMode);
 
     QList<int> filterProfilesList(const QList<int>& profileIDs);
 
