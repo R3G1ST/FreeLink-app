@@ -366,6 +366,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->toolButton_program->setMenu(ui->menu_program);
     ui->toolButton_preferences->setMenu(ui->menu_preferences);
     ui->toolButton_routing->setMenu(ui->menuRouting_Menu);
+    ui->toolButton_testing->setMenu(ui->menuTesting);
     ui->toolButton_tools->setMenu(ui->menuTools);
     ui->toolButton_program->installEventFilter(this);
     ui->menubar->setVisible(false);
@@ -798,13 +799,6 @@ connect(ui->actionRestart_Proxy, &QAction::triggered, this, [=,this] {
     else ui->system_dns->hide();
 
     connect(ui->menu_server, &QMenu::aboutToShow, this, [=,this](){
-        if (running)
-        {
-            ui->actionSpeedtest_Current->setEnabled(true);
-        } else
-        {
-            ui->actionSpeedtest_Current->setEnabled(false);
-        }
         if (auto selected = get_now_selected_list(); selected.empty())
         {
             ui->actionSpeedtest_Selected->setEnabled(false);
@@ -823,6 +817,17 @@ connect(ui->actionRestart_Proxy, &QAction::triggered, this, [=,this] {
         } else {
             speedtestRunning.unlock();
             ui->menu_server->removeAction(ui->menu_stop_testing);
+        }
+    });
+
+    connect(ui->menuTesting, &QMenu::aboutToShow, this, [=,this](){
+        // Speedtest Current only makes sense against a live instance.
+        ui->actionSpeedtest_Current->setEnabled(running != nullptr);
+        if (!speedtestRunning.tryLock()) {
+            ui->menuTesting->addAction(ui->menu_stop_testing);
+        } else {
+            speedtestRunning.unlock();
+            ui->menuTesting->removeAction(ui->menu_stop_testing);
         }
     });
 
@@ -2884,7 +2889,7 @@ void MainWindow::on_menu_scan_qr_triggered() {
 }
 
 void MainWindow::on_menu_clear_test_result_triggered() {
-    auto entIDs = get_selected_or_group();
+    auto entIDs = Configs::dataManager->groupsRepo->CurrentGroup()->Profiles();
     auto ents = Configs::dataManager->profilesRepo->GetProfileBatch(entIDs);
     if (ents.empty()) return;
     for (const auto &ent: ents) {
@@ -3346,11 +3351,6 @@ void MainWindow::on_tabWidget_customContextMenuRequested(const QPoint &p) {
     auto group = Configs::dataManager->groupsRepo->GetGroup(Configs::dataManager->settingsRepo->current_group);
     if (Configs::dataManager->groupsRepo->GetAllGroupIds().size() > 1) menu->addAction(deleteAction);
     if (!group->Profiles().empty()) {
-        menu->addAction(ui->actionUrl_Test_Group);
-        menu->addAction(ui->actionSpeedtest_Group);
-        menu->addAction(ui->actionResolve_Out_IP);
-        menu->addAction(ui->menu_resolve_domain);
-        menu->addAction(ui->menu_clear_test_result);
         menu->addAction(ui->menu_delete_repeat);
         menu->addAction(ui->menu_remove_unavailable);
         menu->addAction(ui->menu_remove_invalid);
@@ -3494,6 +3494,7 @@ void MainWindow::RegisterHiddenMenuShortcuts(bool unregister) {
     collectMenuShortcuts(ui->menu_program, claimed);
     collectMenuShortcuts(ui->menu_preferences, claimed);
     collectMenuShortcuts(ui->menuRouting_Menu, claimed);
+    collectMenuShortcuts(ui->menuTesting, claimed);
     collectMenuShortcuts(ui->menuTools, claimed);
 
     registerMenuShortcuts(ui->menuHidden_menu, claimed);
