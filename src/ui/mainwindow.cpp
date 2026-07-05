@@ -833,7 +833,7 @@ connect(ui->actionRestart_Proxy, &QAction::triggered, this, [=,this] {
 
     auto getRemoteRouteProfiles = [=,this]
     {
-        auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/freelinkproj/routeprofiles/git/trees/profile");
+        auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/R3G1ST/FreeLink-routeprofiles/git/trees/profile");
         if (resp.error.isEmpty()) {
             QStringList newRemoteRouteProfiles;
             QJsonObject release = QString2QJsonObject(resp.data);
@@ -898,7 +898,7 @@ connect(ui->actionRestart_Proxy, &QAction::triggered, this, [=,this] {
                 action->setText(profile);
                 connect(action, &QAction::triggered, this, [=,this]()
                 {
-                    auto resp = NetworkRequestHelper::HttpGet(Configs::get_jsdelivr_link("https://raw.githubusercontent.com/freelinkproj/routeprofiles/profile/" + profile + ".json"));
+                    auto resp = NetworkRequestHelper::HttpGet(Configs::get_jsdelivr_link("https://raw.githubusercontent.com/R3G1ST/FreeLink-routeprofiles/profile/" + profile + ".json"));
                     if (!resp.error.isEmpty()) {
                         runOnUiThread([=] {
                             MessageBoxWarning(QObject::tr("Download Profiles"), QObject::tr("Requesting profile error: %1").arg(resp.error + "\n" + resp.data));
