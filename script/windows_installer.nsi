@@ -123,22 +123,18 @@ Section "FreeLink (Required)" SecMain
     Abort "This installer only supports 64-bit Windows."
   ${EndIf}
   
-  ; Download updater from GitHub
+  ; Download updater from GitHub (optional - don't abort if fails)
   DetailPrint "Downloading updater..."
-  nsExec::ExecToLog 'curl -L -o "$INSTDIR\updater.exe" "${UPDATE_BASE_URL}/updater.exe" --connect-timeout 15 --retry 2'
+  nsExec::ExecToLog 'curl -L -o "$INSTDIR\updater.exe" "${UPDATE_BASE_URL}/updater.exe" --connect-timeout 10 --retry 1 -f'
   Pop $0
   ${If} $0 != "0"
-    ; Fallback: try PowerShell
     DetailPrint "Trying PowerShell download..."
-    nsExec::ExecToLog 'powershell -Command "Invoke-WebRequest -Uri \'${UPDATE_BASE_URL}/updater.exe\' -OutFile \'$INSTDIR\updater.exe\' -TimeoutSec 30"'
+    nsExec::ExecToLog 'powershell -Command "Invoke-WebRequest -Uri \'${UPDATE_BASE_URL}/updater.exe\' -OutFile \'$INSTDIR\updater.exe\' -TimeoutSec 15"'
     Pop $0
   ${EndIf}
-  
   ${If} $0 != "0"
-    MessageBox MB_YESNO|MB_ICONEXCLAMATION "Could not download updater.$\r$\nAuto-update will not work.$\r$\n$\r$\nContinue anyway?" IDYES skip_updater
-    Abort "Download failed"
+    DetailPrint "Updater download failed - continuing without auto-update"
   ${EndIf}
-  skip_updater:
   
   ; Shortcuts
   CreateShortcut "$DESKTOP\FreeLink.lnk" "$INSTDIR\FreeLink.exe" "" "$INSTDIR\FreeLink.exe" 0
