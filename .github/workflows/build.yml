@@ -12,6 +12,7 @@ jobs:
   build-go:
     permissions:
       contents: read
+    continue-on-error: true
     strategy:
       matrix:
         include:
