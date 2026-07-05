@@ -6,7 +6,7 @@
 
 class QTimer;
 
-namespace Throne {
+namespace FreeLink {
 
 // One periodically-run maintenance job (e.g. refreshing subscriptions or remote routing
 // profiles). Instead of a fire-every-N-minutes timer, the runner remembers when each job
@@ -51,4 +51,4 @@ private:
     std::vector<PeriodicTask> m_tasks;
 };
 
-} // namespace Throne
+} // namespace FreeLink
