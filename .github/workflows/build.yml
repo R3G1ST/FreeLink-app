@@ -280,12 +280,10 @@ jobs:
           find . -name artifacts.tgz | xargs -n1 tar xvzf
           ####
           sudo apt install nsis
-          cp ./script/windows_installer.nsi .
-          cp ./script/FreeLink.ico .
-          cp ./script/FreeLinkDel.ico .
-          cp -n ./LICENSE . || true
+          cd script
           makensis windows_installer.nsi
-          cp FreeLinkSetup.exe deployment/FreeLink-${{ github.event.inputs.tag }}-windows-universal-installer.exe
+          cd ..
+          cp script/FreeLink-Setup.exe deployment/FreeLink-${{ github.event.inputs.tag }}-windows-universal-installer.exe
           ####
           cd deployment
           mkdir debug
