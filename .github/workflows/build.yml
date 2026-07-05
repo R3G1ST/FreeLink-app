@@ -281,6 +281,8 @@ jobs:
           ####
           sudo apt install nsis
           cp ./script/windows_installer.nsi .
+          cp ./script/FreeLink.ico .
+          cp ./script/FreeLinkDel.ico .
           makensis windows_installer.nsi
           cp FreeLinkSetup.exe deployment/FreeLink-${{ github.event.inputs.tag }}-windows-universal-installer.exe
           ####
