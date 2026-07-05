@@ -27,7 +27,7 @@ SetCompressorDictSize 64
 ; =============================================
 ; UPDATE CONFIG
 ; =============================================
-!define UPDATE_BASE_URL "https://github.com/R3G1ST/FreeLink-app/releases/download/v1.0.0"
+!define UPDATE_BASE_URL "https://github.com/R3G1ST/FreeLink-app/releases/download/v1.1.0"
 
 ; =============================================
 ; CUSTOM COLORS
@@ -62,11 +62,11 @@ SetCompressorDictSize 64
 ; =============================================
 ; VERSION INFO
 ; =============================================
-VIProductVersion "1.0.0.0"
+VIProductVersion "1.1.0.0"
 VIAddVersionKey "ProductName" "FreeLink"
 VIAddVersionKey "FileDescription" "FreeLink VPN Client Installer"
 VIAddVersionKey "LegalCopyright" "2026 FreeLink"
-VIAddVersionKey "FileVersion" "1.0.0"
+VIAddVersionKey "FileVersion" "1.1.0"
 
 UninstallText "This will uninstall FreeLink. Do you wish to continue?"
 
