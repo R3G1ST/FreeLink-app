@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-VERSION="$1"
+VERSION="${1#v}"
 ARCH="$2"
 
 mkdir -p FreeLink/DEBIAN
