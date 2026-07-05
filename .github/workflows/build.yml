@@ -283,6 +283,7 @@ jobs:
           cp ./script/windows_installer.nsi .
           cp ./script/FreeLink.ico .
           cp ./script/FreeLinkDel.ico .
+          cp ./LICENSE .
           makensis windows_installer.nsi
           cp FreeLinkSetup.exe deployment/FreeLink-${{ github.event.inputs.tag }}-windows-universal-installer.exe
           ####
