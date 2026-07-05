@@ -1,4 +1,4 @@
-module ThroneCore
+module FreeLinkCore
 
 go 1.26
 
