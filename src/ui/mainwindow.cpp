@@ -3588,8 +3588,9 @@ bool MainWindow::StopVPNProcess() {
 
 bool isNewer(QString assetName) {
     if (QString(NKR_VERSION).isEmpty()) return false;
-    assetName = assetName.mid(7); // take out FreeLink-
+    assetName = assetName.mid(assetName.indexOf("-") + 1); // take out FreeLink-
     QString version;
+    if (assetName.startsWith("v")) assetName.remove(0, 1);
     auto spl = assetName.split('-');
     version += spl[0]; // version: 1.2.3
     if (spl[1].contains("beta") || spl[1].contains("alpha") || spl[1].contains("rc")) version += "."+spl[1]; // .beta.13
