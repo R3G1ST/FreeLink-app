@@ -1,75 +1,80 @@
-# FreeLink
+<p align="center">
+  <img src="res/public/FreeLink.png" width="128" alt="FreeLink Logo"/>
+</p>
 
-Cross-platform GUI proxy utility, empowered by [Sing-box](https://github.com/SagerNet/sing-box)
+<h1 align="center">FreeLink</h1>
 
-Supports Windows 11/10/8/7 / Linux / MacOS out of the box.
+<p align="center">Cross-platform GUI proxy utility, empowered by <a href="https://github.com/SagerNet/sing-box">Sing-box</a></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue?style=for-the-badge" alt="Platform"/>
+  <img src="https://img.shields.io/badge/License-GPL--3.0-green?style=for-the-badge" alt="License"/>
+</p>
 
 > Fork of [Throne](https://github.com/throneproj/Throne) (Formerly Nekoray), customized and maintained as FreeLink.
 
-### Note on MacOS releases
-Apple platforms have a very strict security policy and since FreeLink does not have a signed certificate, you will have to remove the quarantine using `xattr -d com.apple.quarantine /path/to/freelink.app`. Also to get the built-in privilege escalation to work, `Terminal` should have the `Full Disk` access.
+## Features
 
-## Supported protocols
+- **Multi-protocol**: SOCKS, HTTP(S), Shadowsocks, Trojan, VMess, VLESS, TUIC, Hysteria, Hysteria2, Wireguard, AmneziaWG, SSH, and more
+- **Subscription support**: Share links, Sing-box JSON, v2rayN, Clash formats
+- **Deeplinks**: Quick import via custom URL scheme
+- **System proxy**: Automatic proxy configuration
+- **TUN mode**: Full system traffic capture
+- **Route profiles**: Downloadable rulesets for advanced routing
 
-- SOCKS
-- HTTP(S)
-- Shadowsocks
-- Trojan
-- VMess
-- VLESS
-- TUIC
-- Hysteria
-- Hysteria2
-- AnyTLS
-- Mieru
-- NaïveProxy
-- Juicity
-- TrustTunnel
-- ShadowTLS
-- Wireguard
-- AmneziaWG
-- SSH
-- Xray VLESS
-- Custom Outbound (Both Sing-box and Xray)
-- Custom Config (Both Sing-box and Xray)
-- Chaining outbounds
-- Extra Core
+## Installation
 
-## Subscription Formats
+### Windows
+Download the latest `FreeLinkSetup.exe` from [Releases](https://github.com/R3G1ST/FreeLink-app/releases).
 
-Various formats are supported, including share links, various JSON representation of Sing-box configs, and v2rayN link format as well as limited support for Shadowsocks and Clash formats.
+### Linux
+Download the `.deb` or `.AppImage` package from [Releases](https://github.com/R3G1ST/FreeLink-app/releases).
 
-Deeplinks are also supported, read the [documentation](https://freelinkproj.github.io/advanced/deeplinks/) for more information.
+### macOS
+```bash
+# Remove quarantine attribute
+xattr -d com.apple.quarantine /path/to/FreeLink.app
+```
 
-## Credits
+## Supported Protocols
 
-- [SagerNet/sing-box](https://github.com/SagerNet/sing-box)
-- [XTLS/Xray-core](https://github.com/xtls/xray-core)
-- [Qv2ray](https://github.com/Qv2ray/Qv2ray)
-- [Qt](https://www.qt.io/)
-- [simple-protobuf](https://github.com/tonda-kriz/simple-protobuf)
-- [fkYAML](https://github.com/fktn-k/fkYAML)
-- [quirc](https://github.com/dlbeer/quirc)
-- [QHotkey](https://github.com/Skycoder42/QHotkey)
-- [srombauts/sqlitecpp](https://github.com/srombauts/sqlitecpp)
+| Protocol | Status |
+|----------|--------|
+| SOCKS / HTTP(S) | ✅ |
+| Shadowsocks | ✅ |
+| Trojan | ✅ |
+| VMess / VLESS | ✅ |
+| TUIC | ✅ |
+| Hysteria / Hysteria2 | ✅ |
+| Wireguard / AmneziaWG | ✅ |
+| SSH | ✅ |
+| NaïveProxy / Juicity | ✅ |
+| Custom Outbound | ✅ |
 
-## FAQ
+## Building from Source
 
-**Why does my Anti-Virus detect FreeLink and/or its Core as malware?** <br/>
-FreeLink's built-in update functionality downloads the new release, removes the old files and replaces them with the new ones. Also the `System DNS` feature will change your system's DNS settings, which is considered a dangerous action by some Anti-Virus applications.
+### Requirements
+- CMake 3.20+
+- Qt 6.x or Qt 5.x
+- Go 1.20+
+- Protobuf compiler
 
-**Is setting the `SUID` bit really needed on Linux?** <br/>
-To create and manage a system TUN interface, root access is required. Without it, you will have to grant the Core some `Cap_xxx_admin` and still need to enter your password 3 to 4 times per TUN activation. You can also opt to disable the automatic privilege escalation in `Basic Settings`->`Security`, but note that features that require root access will stop working unless you manually grant the needed permissions.
-
-**Why does my internet stop working after I force quit FreeLink?** <br/>
-If FreeLink is force-quit while `System proxy` is enabled, the process ends immediately and FreeLink cannot reset the proxy. <br/>
-Solution:
-- Always close FreeLink normally.
-- If you force quit by accident, open FreeLink again, enable `System proxy`, then disable it — this will reset the settings.
+### Build
+```bash
+git clone https://github.com/R3G1ST/FreeLink-app.git
+cd FreeLink-app
+mkdir build && cd build
+cmake ..
+make -j$(nproc)
+```
 
 ## Credits
 
-- [SagerNet/sing-box](https://github.com/SagerNet/sing-box)
-- [XTLS/Xray-core](https://github.com/xtls/xray-core)
 - [Throne (Original)](https://github.com/throneproj/Throne)
+- [SagerNet/sing-box](https://github.com/SagerNet/sing-box)
+- [XTLS/Xray-core](https://github.com/xtls/xray-core)
 - [Qt](https://www.qt.io/)
+
+## License
+
+[GPL-3.0](LICENSE)
