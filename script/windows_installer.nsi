@@ -25,6 +25,11 @@ SetCompressorDictSize 64
 !define MUI_UNICON "../res/FreeLinkDel.ico"
 
 ; =============================================
+; UPDATE CONFIG
+; =============================================
+!define UPDATE_BASE_URL "https://github.com/R3G1ST/FreeLink-app/releases/download/v1.0.0"
+
+; =============================================
 ; CUSTOM COLORS
 ; =============================================
 !define BG_COLOR "0A0E1A"
@@ -80,6 +85,24 @@ UninstallText "This will uninstall FreeLink. Do you wish to continue?"
 !macroend
 
 ; =============================================
+; DOWNLOAD FUNCTION
+; =============================================
+Function DownloadFile
+  ; $0 = URL
+  ; $1 = Output filename
+  DetailPrint "Downloading $1..."
+  NSISdl::download /TRANSLATE "Downloading %s" "Connecting..." "second" "bytes" "Progress:" "completed" \
+    /TIMEOUT 30000 /RETRY 3 /CANCELABLE \
+    "$0" "$INSTDIR\$1"
+  Pop $2
+  ${If} $2 != "success"
+    MessageBox MB_YESNO|MB_ICONEXCLAMATION "Failed to download $1.$\r$\n$\r$\nDo you want to continue without it?" IDYES skip_download
+    Abort "Download failed"
+  ${EndIf}
+  skip_download:
+FunctionEnd
+
+; =============================================
 ; INSTALL SECTION
 ; =============================================
 Section "FreeLink (Required)" SecMain
@@ -90,15 +113,32 @@ Section "FreeLink (Required)" SecMain
   
   !insertmacro AbortOnRunningApp "$INSTDIR\FreeLink.exe"
   
-  ; Install binaries
+  ; Install core binaries
   ${If} ${IsNativeAMD64}
     File /oname=libcronet.dll "../deployment/windows-amd64/libcronet.dll"
     File /oname=FreeLinkCore.exe "../deployment/windows-amd64/FreeLinkCore.exe"
     File /oname=FreeLink.exe "../deployment/windows-amd64/FreeLink.exe"
-    File /oname=updater.exe "../deployment/windows-amd64/updater.exe"
+    ; updater.exe is downloaded from GitHub during install
   ${Else}
     Abort "This installer only supports 64-bit Windows."
   ${EndIf}
+  
+  ; Download updater from GitHub
+  DetailPrint "Downloading updater..."
+  nsExec::ExecToLog 'curl -L -o "$INSTDIR\updater.exe" "${UPDATE_BASE_URL}/updater.exe" --connect-timeout 15 --retry 2'
+  Pop $0
+  ${If} $0 != "0"
+    ; Fallback: try PowerShell
+    DetailPrint "Trying PowerShell download..."
+    nsExec::ExecToLog 'powershell -Command "Invoke-WebRequest -Uri \'${UPDATE_BASE_URL}/updater.exe\' -OutFile \'$INSTDIR\updater.exe\' -TimeoutSec 30"'
+    Pop $0
+  ${EndIf}
+  
+  ${If} $0 != "0"
+    MessageBox MB_YESNO|MB_ICONEXCLAMATION "Could not download updater.$\r$\nAuto-update will not work.$\r$\n$\r$\nContinue anyway?" IDYES skip_updater
+    Abort "Download failed"
+  ${EndIf}
+  skip_updater:
   
   ; Shortcuts
   CreateShortcut "$DESKTOP\FreeLink.lnk" "$INSTDIR\FreeLink.exe" "" "$INSTDIR\FreeLink.exe" 0
