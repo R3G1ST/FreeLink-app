@@ -21,8 +21,8 @@ SetCompressor /SOLID zlib
 SetCompressorDictSize 64
 
 !define MUI_ABORTWARNING
-!define MUI_ICON "../res/FreeLink.ico"
-!define MUI_UNICON "../res/FreeLinkDel.ico"
+!define MUI_ICON "FreeLink.ico"
+!define MUI_UNICON "FreeLinkDel.ico"
 
 ; =============================================
 ; UPDATE CONFIG
