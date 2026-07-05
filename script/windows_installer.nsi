@@ -1,5 +1,5 @@
 ; =============================================
-; FreeLink Installer - Modern Dark Theme
+; FreeLink Installer - Dark Theme
 ; =============================================
 !include MUI2.nsh
 !include nsDialogs.nsh
@@ -7,6 +7,7 @@
 !include FileFunc.nsh
 !include WinVer.nsh
 !include x64.nsh
+!include "WinMessages.nsh"
 !addplugindir "../script"
 
 ; =============================================
@@ -20,25 +21,34 @@ SetCompressor /SOLID /FINAL lzma
 SetCompressorDictSize 64
 
 !define MUI_ABORTWARNING
+!define MUI_ICON "../res/FreeLink.ico"
+!define MUI_UNICON "../res/FreeLinkDel.ico"
+
+; =============================================
+; CUSTOM COLORS
+; =============================================
+!define BG_COLOR "0A0E1A"
+!define TEXT_COLOR "F0F2F8"
+!define ACCENT_COLOR "8B5CF6"
 
 ; =============================================
 ; PAGES
 ; =============================================
 !define MUI_WELCOMEPAGE_TITLE "Welcome to FreeLink"
-!define MUI_WELCOMEPAGE_TEXT "FreeLink is a cross-platform VPN client powered by Sing-box.$\n$\nThis installer will guide you through the installation.$\n$\nFeatures:$\n  Multi-protocol: VLESS, Trojan, Shadowsocks, Hysteria2, WireGuard$\n  System proxy & TUN mode$\n  Subscription & deeplink support"
+!define MUI_WELCOMEPAGE_TEXT "FreeLink is a cross-platform VPN client powered by Sing-box.$\r$\n$\r$\nThis installer will guide you through the installation process.$\r$\n$\r$\nFeatures:$\r$\n  Multi-protocol: VLESS, Trojan, Shadowsocks, Hysteria2, WireGuard$\r$\n  System proxy and TUN mode$\r$\n  Subscription and deeplink support"
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "../LICENSE"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 
-!define MUI_FINISHPAGE_TITLE "FreeLink Installed"
-!define MUI_FINISHPAGE_TEXT "FreeLink has been installed successfully.$\n$\nClick Finish to launch FreeLink."
+!define MUI_FINISHPAGE_TITLE "Installation Complete"
+!define MUI_FINISHPAGE_TEXT "FreeLink has been installed successfully.$\r$\n$\r$\nClick Finish to launch FreeLink."
 !define MUI_FINISHPAGE_RUN "$INSTDIR\FreeLink.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "Launch FreeLink"
 !insertmacro MUI_PAGE_FINISH
 
-; Uninstaller
+; Uninstaller pages
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 
@@ -78,17 +88,16 @@ Section "FreeLink (Required)" SecMain
   SetOutPath "$INSTDIR"
   SetOverwrite on
   
-  ; Kill running instance
   !insertmacro AbortOnRunningApp "$INSTDIR\FreeLink.exe"
   
-  ; Install binaries based on architecture
+  ; Install binaries
   ${If} ${IsNativeAMD64}
     File /oname=libcronet.dll "../deployment/windows-amd64/libcronet.dll"
     File /oname=FreeLinkCore.exe "../deployment/windows-amd64/FreeLinkCore.exe"
     File /oname=FreeLink.exe "../deployment/windows-amd64/FreeLink.exe"
     File /oname=updater.exe "../deployment/windows-amd64/updater.exe"
   ${Else}
-    Abort "This installer only supports 64-bit Windows. Please download the legacy build for 32-bit systems."
+    Abort "This installer only supports 64-bit Windows."
   ${EndIf}
   
   ; Shortcuts
