@@ -1,7 +1,7 @@
 package test_utils
 
 import (
-	"ThroneCore/internal/boxbox"
+	"FreeLinkCore/internal/boxbox"
 	"context"
 	"encoding/json"
 	"errors"

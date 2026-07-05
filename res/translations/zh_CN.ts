@@ -2909,8 +2909,8 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
 </translation>
     </message>
     <message>
-        <source>Please run Throne as admin</source>
-        <translation>请以管理员身份运行 Throne</translation>
+        <source>Please run FreeLink as admin</source>
+        <translation>请以管理员身份运行 FreeLink</translation>
     </message>
     <message>
         <source>Click To Sort By Protocol</source>

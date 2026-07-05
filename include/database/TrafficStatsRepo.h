@@ -64,7 +64,7 @@ namespace Configs {
         long long last_seen = 0;
     };
 
-    // Owns the separate traffic-statistics database (throne_stats.db): a tiered
+    // Owns the separate traffic-statistics database (freelink_stats.db): a tiered
     // per-config / per-app time series plus reference metadata. Kept apart from
     // the main database so its write volume never contends with vital profile
     // operations.

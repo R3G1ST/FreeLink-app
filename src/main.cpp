@@ -30,7 +30,7 @@
 #ifdef Q_OS_MACOS
 #include <QFileOpenEvent>
 
-// On macOS the OS reuses the running app and delivers throne:// URLs as a
+// On macOS the OS reuses the running app and delivers freelink:// URLs as a
 // QFileOpenEvent to the application object (never via argv). This filter feeds
 // them into the common deeplink pipeline.
 class MacDeeplinkFilter : public QObject {
@@ -41,7 +41,7 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event) override {
         if (event->type() == QEvent::FileOpen) {
             const QString url = static_cast<QFileOpenEvent *>(event)->url().toString();
-            if (url.startsWith("throne://")) {
+            if (url.startsWith("freelink://")) {
                 Deeplink_Submit(url);
                 return true;
             }
@@ -81,7 +81,7 @@ void loadTranslate(const QString& locale) {
     }
 }
 
-#define LOCAL_SERVER_PREFIX "throne-"
+#define LOCAL_SERVER_PREFIX "freelink-"
 
 int main(int argc, char* argv[]) {
     // Core dump
@@ -125,7 +125,7 @@ int main(int argc, char* argv[]) {
     }
 
     QStringList arguments = QApplication::arguments();
-    // A throne:// URL may be passed as a launch argument (Windows/Linux). Delivered
+    // A freelink:// URL may be passed as a launch argument (Windows/Linux). Delivered
     // after the window is up, or forwarded to the primary instance via the socket below.
     const QString launchDeeplink = Deeplink_ExtractFromArgs(arguments);
 
@@ -144,7 +144,7 @@ int main(int argc, char* argv[]) {
     useAppdata = true; // Example: Package & MacOS
 #endif
     if(useAppdata) {
-        QApplication::setApplicationName("Throne");
+        QApplication::setApplicationName("FreeLink");
         if (!appdataDir.isEmpty()) {
             wd.setPath(appdataDir);
         } else {
@@ -157,7 +157,7 @@ int main(int argc, char* argv[]) {
     QDir("temp").removeRecursively();
 
     // Load database
-    Configs::initDB(QString(QDir::currentPath() + QDir::separator() + "throne.db").toStdString());
+    Configs::initDB(QString(QDir::currentPath() + QDir::separator() + "freelink.db").toStdString());
 
     // Start traffic-statistics maintenance (startup downsample + background rollup).
     Stats::trafficStatsManager->Init();
@@ -260,7 +260,7 @@ int main(int argc, char* argv[]) {
     QObject::connect(&server, &QLocalServer::newConnection, qApp, [&] {
         auto s = server.nextPendingConnection();
         qDebug() << "Another instance tried to wake us up on " << serverName << s;
-        // The waking instance may forward a throne:// deeplink as payload.
+        // The waking instance may forward a freelink:// deeplink as payload.
         auto readPayload = [s] {
             if (s->bytesAvailable() <= 0) return;
             Deeplink_Submit(QString::fromUtf8(s->readAll()).trimmed());

@@ -173,7 +173,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     AutoRun_FixPrivilegeIfNeeded();
     AutoRun_MigrateIfNeeded();
 
-    // register the throne:// URL scheme (self-heals if the install was moved)
+    // register the freelink:// URL scheme (self-heals if the install was moved)
     UrlScheme_RegisterIfNeeded();
 
     // Setup misc UI
@@ -236,13 +236,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     // Prepare core
     auto core_path = QApplication::applicationDirPath() + "/";
-    core_path += "ThroneCore";
+    core_path += "FreeLinkCore";
 
     bool coreDebugMode = (Configs::dataManager->settingsRepo->log_level == "debug");
 
     // Create IPC server with a random UUID name
     Configs::dataManager->settingsRepo->core_socket_name =
-        "throneIPC-" + QUuid::createUuid().toString(QUuid::WithoutBraces);
+        "freelinkIPC-" + QUuid::createUuid().toString(QUuid::WithoutBraces);
     core_server = new QLocalServer(this);
     core_server->setSocketOptions(QLocalServer::UserAccessOption);
     if (!core_server->listen(Configs::dataManager->settingsRepo->core_socket_name)) {
@@ -343,11 +343,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     }
 
     // software_name
-    software_name = "Throne";
+    software_name = "FreeLink";
     software_core_name = "sing-box";
     //
     if (auto dashDir = QDir("dashboard"); !dashDir.exists() && QDir().mkdir("dashboard")) {
-        if (auto dashFile = QFile(":/Throne/dashboard-notice.html"); dashFile.exists() && dashFile.open(QIODevice::ReadOnly))
+        if (auto dashFile = QFile(":/FreeLink/dashboard-notice.html"); dashFile.exists() && dashFile.open(QIODevice::ReadOnly))
         {
             auto data = dashFile.readAll();
             if (auto dest = QFile("dashboard/index.html"); dest.open(QIODevice::Truncate | QIODevice::WriteOnly))
@@ -833,7 +833,7 @@ connect(ui->actionRestart_Proxy, &QAction::triggered, this, [=,this] {
 
     auto getRemoteRouteProfiles = [=,this]
     {
-        auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/throneproj/routeprofiles/git/trees/profile");
+        auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/freelinkproj/routeprofiles/git/trees/profile");
         if (resp.error.isEmpty()) {
             QStringList newRemoteRouteProfiles;
             QJsonObject release = QString2QJsonObject(resp.data);
@@ -898,7 +898,7 @@ connect(ui->actionRestart_Proxy, &QAction::triggered, this, [=,this] {
                 action->setText(profile);
                 connect(action, &QAction::triggered, this, [=,this]()
                 {
-                    auto resp = NetworkRequestHelper::HttpGet(Configs::get_jsdelivr_link("https://raw.githubusercontent.com/throneproj/routeprofiles/profile/" + profile + ".json"));
+                    auto resp = NetworkRequestHelper::HttpGet(Configs::get_jsdelivr_link("https://raw.githubusercontent.com/freelinkproj/routeprofiles/profile/" + profile + ".json"));
                     if (!resp.error.isEmpty()) {
                         runOnUiThread([=] {
                             MessageBoxWarning(QObject::tr("Download Profiles"), QObject::tr("Requesting profile error: %1").arg(resp.error + "\n" + resp.data));
@@ -1111,7 +1111,7 @@ connect(ui->actionRestart_Proxy, &QAction::triggered, this, [=,this] {
     // machine sleeping) still triggers an update on the next launch instead of resetting
     // the clock. Subscriptions and remote routing profiles each carry their own interval.
     {
-        auto* runner = Throne::PeriodicRunner::instance();
+        auto* runner = FreeLink::PeriodicRunner::instance();
         // Settings store the interval sign-encoded (negative = disabled); < 30 min is
         // treated as off, matching the "invalid if less than 30" UI hint.
         const auto minutesOf = [](int v) { return v >= 30 ? v : 0; };
@@ -1493,7 +1493,7 @@ void MainWindow::show_group(int gid) {
 
 void MainWindow::handle_deeplink_impl(const QString &url) {
     const QUrl u(url);
-    // QUrl lowercases the host, so "throne://AddSub/" arrives with host "addsub".
+    // QUrl lowercases the host, so "freelink://AddSub/" arrives with host "addsub".
     const QString cmd = u.host();
     const QUrlQuery q(u);
 
@@ -1609,7 +1609,7 @@ void MainWindow::handle_addsub(const QString &url, const QString &name, bool aut
 }
 
 void MainWindow::import_or_handle_deeplink(const QString &text) {
-    if (const QString trimmed = text.trimmed(); trimmed.startsWith("throne://")) {
+    if (const QString trimmed = text.trimmed(); trimmed.startsWith("freelink://")) {
         handle_deeplink_impl(trimmed);
         return;
     }
@@ -1650,7 +1650,7 @@ void MainWindow::dialog_message_impl(MwMessage cmd, const QStringList &args) {
         auto suggestRestartProxy = settings->Save();
         // Pick up any changed auto-update interval immediately instead of waiting for the
         // next poll (e.g. the user just enabled or shortened a job).
-        Throne::PeriodicRunner::instance()->CheckNow();
+        FreeLink::PeriodicRunner::instance()->CheckNow();
         if (changed(MwArg::Route)) {
             settings->Save();
             suggestRestartProxy = true;
@@ -1907,7 +1907,7 @@ bool MainWindow::get_elevated_permissions(int reason) {
     }
 #endif
 #ifdef Q_OS_WIN
-    auto n = QMessageBox::warning(GetMessageBoxParent(), software_name, tr("Please run Throne as admin"), QMessageBox::Yes | QMessageBox::No);
+    auto n = QMessageBox::warning(GetMessageBoxParent(), software_name, tr("Please run FreeLink as admin"), QMessageBox::Yes | QMessageBox::No);
     if (n == QMessageBox::Yes) {
         this->exit_reason = reason;
         on_menu_exit_triggered();
@@ -3588,7 +3588,7 @@ bool MainWindow::StopVPNProcess() {
 
 bool isNewer(QString assetName) {
     if (QString(NKR_VERSION).isEmpty()) return false;
-    assetName = assetName.mid(7); // take out Throne-
+    assetName = assetName.mid(7); // take out FreeLink-
     QString version;
     auto spl = assetName.split('-');
     version += spl[0]; // version: 1.2.3
@@ -3692,7 +3692,7 @@ void MainWindow::CheckUpdate() {
         return;
     }
 
-    auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/throneproj/Throne/releases");
+    auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/freelinkproj/FreeLink/releases");
     if (!resp.error.isEmpty()) {
         runOnUiThread([=,this] {
             MessageBoxWarning(QObject::tr("Update"), QObject::tr("Requesting update error: %1").arg(resp.error + "\n" + resp.data));
@@ -3751,7 +3751,7 @@ void MainWindow::CheckUpdate() {
                 }
                 QString errors;
                 if (!release_download_url.isEmpty()) {
-                    auto res = NetworkRequestHelper::DownloadAsset(release_download_url, "Throne.zip");
+                    auto res = NetworkRequestHelper::DownloadAsset(release_download_url, "FreeLink.zip");
                     if (!res.isEmpty()) {
                         errors += res;
                     }

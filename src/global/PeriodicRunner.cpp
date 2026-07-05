@@ -6,7 +6,7 @@
 
 #include "include/global/Utils.hpp"
 
-namespace Throne {
+namespace FreeLink {
 
 // How often to re-check whether any job is due. The minimum job interval is measured in
 // tens of minutes, so a 60s poll is plenty granular while staying cheap.
@@ -54,4 +54,4 @@ void PeriodicRunner::tick() {
     }
 }
 
-} // namespace Throne
+} // namespace FreeLink

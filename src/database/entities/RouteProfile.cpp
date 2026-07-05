@@ -301,7 +301,7 @@ namespace Configs {
 
     QJsonObject RouteProfile::ToShareObject() {
         QJsonObject root;
-        root["kind"] = "throne-route-profile";
+        root["kind"] = "freelink-route-profile";
         root["v"] = 1;
         root["name"] = name;
         if (isRaw) {
@@ -335,7 +335,7 @@ namespace Configs {
     QString RouteProfile::ToShareLink() {
         const auto json = QJsonDocument(ToShareObject()).toJson(QJsonDocument::Compact);
         const auto b64 = json.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
-        return QStringLiteral("throne://route?data=") + QString::fromLatin1(b64);
+        return QStringLiteral("freelink://route?data=") + QString::fromLatin1(b64);
     }
 
     std::shared_ptr<RouteProfile> RouteProfile::FromShareInput(const QString& input, QString* fatalError, QString* warnings, bool* wasOldArray) {
@@ -346,8 +346,8 @@ namespace Configs {
             return nullptr;
         }
 
-        // throne://route?data=<base64> deep link
-        if (text.startsWith("throne://", Qt::CaseInsensitive)) {
+        // freelink://route?data=<base64> deep link
+        if (text.startsWith("freelink://", Qt::CaseInsensitive)) {
             const QUrl u(text);
             if (u.host().compare("route", Qt::CaseInsensitive) != 0) {
                 fatalError->append("Unsupported deep link command");
@@ -368,14 +368,14 @@ namespace Configs {
                 doc = QJsonDocument::fromJson(QByteArray::fromBase64(text.toUtf8()));
         }
         if (doc.isNull()) {
-            fatalError->append("Input is not valid JSON, base64, or a Throne route link");
+            fatalError->append("Input is not valid JSON, base64, or a FreeLink route link");
             return nullptr;
         }
 
         // New schema: a tagged object carrying the whole profile.
         if (doc.isObject()) {
             const QJsonObject root = doc.object();
-            if (root.value("kind").toString() != QStringLiteral("throne-route-profile")) {
+            if (root.value("kind").toString() != QStringLiteral("freelink-route-profile")) {
                 fatalError->append("Unrecognized route object");
                 return nullptr;
             }
@@ -429,7 +429,7 @@ namespace Configs {
     QList<std::shared_ptr<RouteProfile>> RouteProfile::FromRemoteRoutesLink(const QString& input, bool* wasRemoteRouteLink, QString* error) {
         if (wasRemoteRouteLink) *wasRemoteRouteLink = false;
         const QString text = input.trimmed();
-        if (!text.startsWith("throne://", Qt::CaseInsensitive)) return {};
+        if (!text.startsWith("freelink://", Qt::CaseInsensitive)) return {};
         const QUrl u(text);
         if (u.host().compare("remoteroute", Qt::CaseInsensitive) != 0) return {};
         if (wasRemoteRouteLink) *wasRemoteRouteLink = true;
@@ -495,7 +495,7 @@ namespace Configs {
             QJsonObject obj;
             obj["action"] = "reject";
             QJsonArray jarray;
-            jarray.append("throne-adblocksingbox");
+            jarray.append("freelink-adblocksingbox");
             obj["rule_set"] = jarray;
             return obj;
         };

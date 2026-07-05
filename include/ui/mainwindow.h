@@ -313,11 +313,11 @@ private:
 
     void handle_import_route(const QString &url);
 
-    // throne://remoteRoute?data=<...> : add one or more remote routing profiles. The data is
+    // freelink://remoteRoute?data=<...> : add one or more remote routing profiles. The data is
     // (base64 of) a JSON array of {url, auto_update[, name]} objects.
     void handle_add_remote_routes(const QString &url);
 
-    // Routes user-supplied text: throne:// links go to the deeplink handler, the
+    // Routes user-supplied text: freelink:// links go to the deeplink handler, the
     // rest to the subscription/profile importer.
     void import_or_handle_deeplink(const QString &text);
 

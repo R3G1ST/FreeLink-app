@@ -18,8 +18,8 @@
         <file>icon/material/delete.png</file>
         <file>icon/material/swap-horizontal.png</file>
     </qresource>
-    <qresource prefix="/Throne">
-        <file alias="Throne.png">public/Throne.png</file>
+    <qresource prefix="/FreeLink">
+        <file alias="FreeLink.png">public/FreeLink.png</file>
         <file alias="Dns.png">public/Dns.png</file>
         <file alias="Off.png">public/Off.png</file>
         <file alias="Proxy.png">public/Proxy.png</file>

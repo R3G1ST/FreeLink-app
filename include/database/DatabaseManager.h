@@ -21,7 +21,7 @@ namespace Configs {
         Database statsDb;
 
         static void createEntityIdsTable(Database& db);
-        // Derive the stats database path (throne_stats.db) as a sibling of the
+        // Derive the stats database path (freelink_stats.db) as a sibling of the
         // main database file.
         static std::string deriveStatsDbPath(const std::string& dbPath);
         void initializeRepos();

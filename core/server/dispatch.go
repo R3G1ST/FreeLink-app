@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ThroneCore/gen"
+	"FreeLinkCore/gen"
 	"context"
 	"encoding/binary"
 	"fmt"

@@ -30,7 +30,7 @@ namespace {
 namespace Configs {
 
     QString genTunName() {
-        auto tun_name = "throne-tun";
+        auto tun_name = "freelink-tun";
 #ifdef Q_OS_MACOS
         tun_name = "";
 #endif
@@ -1038,7 +1038,7 @@ namespace Configs {
 
             auto inbounds = userXrayConfig["inbounds"].toArray();
             inbounds.prepend(QJsonObject{
-                {"tag", "throne-bridge"},
+                {"tag", "freelink-bridge"},
                 {"listen", custom->bridgeHost},
                 {"port", custom->bridgePort},
                 {"protocol", "socks"},
@@ -1362,7 +1362,7 @@ namespace Configs {
         if (Configs::dataManager->settingsRepo->adblock_enable) {
             ruleSetArray += QJsonObject{
                         {"type", "remote"},
-                        {"tag", "throne-adblocksingbox"},
+                        {"tag", "freelink-adblocksingbox"},
                         {"format", "binary"},
                         {"url", get_jsdelivr_link("https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblocksingbox.srs")},
                     };

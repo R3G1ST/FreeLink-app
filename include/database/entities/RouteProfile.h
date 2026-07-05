@@ -26,12 +26,12 @@ namespace Configs {
 
         // Raw profiles carry a full sing-box `route` JSON object (as text) instead of
         // structured Rules. When preventModifications is set we use it verbatim (after
-        // outbound-id translation); otherwise Throne still injects its internal plumbing.
+        // outbound-id translation); otherwise FreeLink still injects its internal plumbing.
         bool isRaw = false;
         QString rawRoute = "";
         bool preventModifications = false;
 
-        // Remote profiles fetch their rules from a URL (content may be a throne://route deep
+        // Remote profiles fetch their rules from a URL (content may be a freelink://route deep
         // link, its base64, or the JSON share object). The profile is a normal *structured*
         // profile locally and stays user-editable; a manual/auto update re-fetches from
         // remoteURL and overwrites the rules (the local name is kept). Raw remote profiles
@@ -52,15 +52,15 @@ namespace Configs {
         // Lossless share schema: a tagged JSON object carrying the profile name, default
         // outbound and every rule (with its simple/advanced type).
         QJsonObject ToShareObject();
-        // ToShareObject() compacted, base64url-encoded, wrapped as throne://route?data=<...>
+        // ToShareObject() compacted, base64url-encoded, wrapped as freelink://route?data=<...>
         QString ToShareLink();
-        // Parse any shared form: a throne://route link, a base64 blob, a raw share object,
+        // Parse any shared form: a freelink://route link, a base64 blob, a raw share object,
         // or a legacy bare rule array. Returns nullptr and fills *fatalError on failure;
         // non-fatal notes (e.g. outbound fallbacks) go to *warnings. *wasOldArray is set
         // true when the input was a legacy array (no name / default outbound to import).
         static std::shared_ptr<RouteProfile> FromShareInput(const QString& input, QString* fatalError, QString* warnings, bool* wasOldArray);
 
-        // Parse a throne://remoteRoute?data=<...> deep link into unsaved remote route profiles
+        // Parse a freelink://remoteRoute?data=<...> deep link into unsaved remote route profiles
         // (id=-1, isRemote, remoteURL, autoUpdate, name defaulting to the URL host). *wasRemoteRouteLink
         // is set true when the input is a remoteRoute link at all (even if its payload is invalid);
         // on a bad payload the list is empty and *error explains why. Returns {} with

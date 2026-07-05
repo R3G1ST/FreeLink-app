@@ -34,7 +34,7 @@ private:
 
     void applyImportedProfile(const std::shared_ptr<Configs::RouteProfile>& profile, bool wasOldArray);
 
-    // If `text` is a throne://remoteRoute deep link, confirm and add its remote profiles to the
+    // If `text` is a freelink://remoteRoute deep link, confirm and add its remote profiles to the
     // in-memory list (fetching them via the Update flow) and return true. Returns false when it
     // isn't such a link, so the caller can fall through to single-profile import.
     bool tryImportRemoteRoutesLink(const QString& text);

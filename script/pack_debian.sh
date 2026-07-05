@@ -4,15 +4,15 @@ set -e
 VERSION="$1"
 ARCH="$2"
 
-mkdir -p Throne/DEBIAN
-mkdir -p Throne/opt
-cp -r linux-$ARCH$([[ $3 == "systemqt" ]] && echo "-system-qt") Throne/opt
-mv Throne/opt/linux-$ARCH$([[ $3 == "systemqt" ]] && echo "-system-qt") Throne/opt/Throne
-rm Throne/opt/Throne/Throne.debug
+mkdir -p FreeLink/DEBIAN
+mkdir -p FreeLink/opt
+cp -r linux-$ARCH$([[ $3 == "systemqt" ]] && echo "-system-qt") FreeLink/opt
+mv FreeLink/opt/linux-$ARCH$([[ $3 == "systemqt" ]] && echo "-system-qt") FreeLink/opt/FreeLink
+rm FreeLink/opt/FreeLink/FreeLink.debug
 
 # basic
-cat >Throne/DEBIAN/control <<-EOF
-Package: Throne
+cat >FreeLink/DEBIAN/control <<-EOF
+Package: FreeLink
 Version: $VERSION
 Architecture: $ARCH
 Maintainer: Mahdi Mahdi.zrei@gmail.com
@@ -20,13 +20,13 @@ Depends: desktop-file-utils$([[ $3 == "systemqt" ]] && echo ", libqt6core6, libq
 Description: Qt based cross-platform GUI proxy configuration manager (backend: sing-box)
 EOF
 
-cat >Throne/DEBIAN/postinst <<-EOF
-cat >/usr/share/applications/Throne.desktop<<-END
+cat >FreeLink/DEBIAN/postinst <<-EOF
+cat >/usr/share/applications/FreeLink.desktop<<-END
 [Desktop Entry]
-Name=Throne
+Name=FreeLink
 Comment=Qt based cross-platform GUI proxy configuration manager (backend: sing-box)
-Exec=sh -c "PATH=/opt/Throne:\$PATH /opt/Throne/Throne -appdata"
-Icon=/opt/Throne/Throne.png
+Exec=sh -c "PATH=/opt/FreeLink:\$PATH /opt/FreeLink/FreeLink -appdata"
+Icon=/opt/FreeLink/FreeLink.png
 Terminal=false
 Type=Application
 Categories=Network;Application;
@@ -35,8 +35,8 @@ END
 update-desktop-database
 EOF
 
-sudo chmod 0755 Throne/DEBIAN/postinst
+sudo chmod 0755 FreeLink/DEBIAN/postinst
 
 # desktop && PATH
 
-sudo dpkg-deb --build Throne
+sudo dpkg-deb --build FreeLink

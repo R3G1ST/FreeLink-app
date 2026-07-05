@@ -15,7 +15,7 @@ QString GetTaskName() {
 
     QString shortHash = QString(hash).left(8);
 
-    return QString("Throne AutoRun %1").arg(shortHash);
+    return QString("FreeLink AutoRun %1").arg(shortHash);
 }
 
 QString getCurrentUser() {
@@ -75,7 +75,7 @@ void enable_autorun() {
         "</Task>"
     ).arg(userId, runLevel, exePath);
 
-    QString xmlFilePath = QDir::toNativeSeparators(QDir::tempPath() + "\\Throne_Task.xml");
+    QString xmlFilePath = QDir::toNativeSeparators(QDir::tempPath() + "\\FreeLink_Task.xml");
     QFile xmlFile(xmlFilePath);
     if (xmlFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream out(&xmlFile);

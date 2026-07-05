@@ -403,7 +403,7 @@ void DialogManageRoutes::on_import_route_clicked()
     // Fast path: if the clipboard already holds a usable candidate, just confirm and
     // import it — no need to make the user paste back what they already copied.
     const QString clip = QApplication::clipboard()->text().trimmed();
-    // A throne://remoteRoute deep link adds one or more remote profiles at once.
+    // A freelink://remoteRoute deep link adds one or more remote profiles at once.
     if (tryImportRemoteRoutesLink(clip)) return;
     if (!clip.isEmpty()) {
         QString fatal, warnings;
@@ -429,7 +429,7 @@ void DialogManageRoutes::on_import_route_clicked()
 
     auto layout = new QGridLayout(w);
     auto tEdit = new QTextEdit(w);
-    tEdit->setPlaceholderText(tr("Paste a Throne route link, a remoteRoute link, a base64 blob, or a JSON rule array"));
+    tEdit->setPlaceholderText(tr("Paste a FreeLink route link, a remoteRoute link, a base64 blob, or a JSON rule array"));
     layout->addWidget(tEdit, 0, 0);
 
     auto buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, w);
