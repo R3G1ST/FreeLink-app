@@ -66,7 +66,7 @@ jobs:
       - name: Install Golang For Legacy OS
         if: steps.cache-common.outputs.cache-hit != 'true' && contains( matrix.cross_os, 'legacy' )
         run: |
-          curl -L -o go.zip https://github.com/freelinkproj/env_windows_legacy/releases/download/latest/go.zip
+          curl -L -o go.zip https://github.com/throneproj/env_windows_legacy/releases/download/latest/go.zip
           7z x go.zip
       - name: Install Protoc
         if: steps.cache-common.outputs.cache-hit != 'true'
@@ -200,9 +200,9 @@ jobs:
         shell: bash
         if: contains( matrix.platform, 'windows' )
         run: |
-          curl -L -o qt.7z https://github.com/freelinkproj/buildqt/releases/download/Qt_${{ matrix.qt_version }}/Qt_${{ matrix.qt_version }}_${{ matrix.target }}.7z
+          curl -L -o qt.7z https://github.com/throneproj/buildqt/releases/download/Qt_${{ matrix.qt_version }}/Qt_${{ matrix.qt_version }}_${{ matrix.target }}.7z
           7z x qt.7z
-          curl -L -o openssl.7z https://github.com/freelinkproj/env_windows_legacy/releases/download/latest/openssl_${{ matrix.target }}.7z
+          curl -L -o openssl.7z https://github.com/throneproj/env_windows_legacy/releases/download/latest/openssl_${{ matrix.target }}.7z
           7z x openssl.7z
           export CMAKE_PREFIX_PATH=$PWD/Qt/lib/cmake
           export OPENSSL_ROOT_DIR=$PWD/openssl
