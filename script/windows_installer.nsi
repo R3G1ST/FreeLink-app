@@ -17,7 +17,7 @@ Name "FreeLink"
 OutFile "FreeLink-Setup.exe"
 InstallDir "$LOCALAPPDATA\FreeLink"
 RequestExecutionLevel user
-SetCompressor /SOLID /FINAL lzma
+SetCompressor /SOLID zlib
 SetCompressorDictSize 64
 
 !define MUI_ABORTWARNING
