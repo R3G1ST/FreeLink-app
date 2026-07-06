@@ -20,6 +20,7 @@ static const QMap<QString, QColor> feiyangBaseColor = {
     {"flatgray",  QColor("#FFFFFF")},
     {"lightblue", QColor("#EAF7FF")},
     {"blacksoft", QColor("#444444")},
+    {"freelink",  QColor("#0f0f1a")},
 };
 
 void ThemeManager::ApplyTheme(const QString &theme, bool force) {

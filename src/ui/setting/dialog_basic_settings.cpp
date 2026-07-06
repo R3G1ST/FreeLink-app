@@ -148,6 +148,8 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
     ui->theme->addItem("QDarkStyle");
     // feiyangqingyun custom stylesheet themes (ported from upstream nekoray)
     ui->theme->addItems({"FlatGray", "LightBlue", "BlackSoft"});
+    // FreeLink custom theme
+    ui->theme->addItem("FreeLink");
     ui->enable_custom_icon->setChecked(Configs::dataManager->settingsRepo->use_custom_icons);
     connect(ui->select_custom_icon, &QPushButton::clicked, this, [=, this] {
         auto n = QMessageBox::information(this, "Custom Icon Manual", tr(Configs::Information::CustomIconManual.toStdString().c_str()), QMessageBox::Open | QMessageBox::Cancel);
