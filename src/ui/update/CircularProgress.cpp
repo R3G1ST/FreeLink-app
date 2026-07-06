@@ -8,7 +8,7 @@
 CircularProgress::CircularProgress(QWidget *parent)
     : QWidget(parent)
 {
-    setFixedSize(180, 180);
+    setFixedSize(120, 120);
 
     // Spin animation
     m_spinAnimation = new QPropertyAnimation(this, "spinAngle");
@@ -192,7 +192,7 @@ void CircularProgress::paintEvent(QPaintEvent *event)
     }
 
     // Center content
-    QFont centerFont("Segoe UI", 22, QFont::Bold);
+    QFont centerFont("Segoe UI", 16, QFont::Bold);
     painter.setFont(centerFont);
 
     if (m_state == Complete) {
@@ -208,22 +208,22 @@ void CircularProgress::paintEvent(QPaintEvent *event)
     }
 
     // Status text below
-    QFont statusFont("Segoe UI", 9);
+    QFont statusFont("Segoe UI", 8);
     painter.setFont(statusFont);
     painter.setPen(QColor(160, 160, 180));
 
     if (!m_statusText.isEmpty()) {
         QString dots;
         for (int i = 0; i < m_dotsCount; i++) dots += ".";
-        painter.drawText(QRect(0, h - 40, w, 20), Qt::AlignCenter, m_statusText + dots);
+        painter.drawText(QRect(0, h - 28, w, 16), Qt::AlignCenter, m_statusText + dots);
     }
 
     // Progress detail text
     if (!m_progressText.isEmpty()) {
-        QFont detailFont("Segoe UI", 8);
+        QFont detailFont("Segoe UI", 7);
         painter.setFont(detailFont);
         painter.setPen(QColor(120, 120, 140));
-        painter.drawText(QRect(0, h - 22, w, 18), Qt::AlignCenter, m_progressText);
+        painter.drawText(QRect(0, h - 14, w, 12), Qt::AlignCenter, m_progressText);
     }
 
     painter.end();

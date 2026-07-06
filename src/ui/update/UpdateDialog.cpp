@@ -50,8 +50,8 @@ UpdateDialog::~UpdateDialog()
 void UpdateDialog::setupUI()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->setSpacing(12);
-    mainLayout->setContentsMargins(24, 24, 24, 24);
+    mainLayout->setSpacing(8);
+    mainLayout->setContentsMargins(20, 16, 20, 16);
 
     // Title
     titleLabel = new QLabel(tr("FreeLink Update"));
@@ -67,7 +67,7 @@ void UpdateDialog::setupUI()
 
     // Circular progress widget
     circularProgress = new CircularProgress(this);
-    circularProgress->setFixedSize(160, 160);
+    circularProgress->setFixedSize(120, 120);
     circularProgress->setStatusText(tr("Preparing download..."));
 
     QHBoxLayout *progressLayout = new QHBoxLayout();
