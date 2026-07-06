@@ -50,8 +50,8 @@ UpdateDialog::~UpdateDialog()
 void UpdateDialog::setupUI()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->setSpacing(12);
-    mainLayout->setContentsMargins(24, 20, 24, 20);
+    mainLayout->setSpacing(16);
+    mainLayout->setContentsMargins(32, 24, 32, 24);
     mainLayout->setAlignment(Qt::AlignHCenter);
 
     // Title
@@ -67,11 +67,11 @@ void UpdateDialog::setupUI()
     mainLayout->addWidget(versionLabel);
 
     // Spacer
-    mainLayout->addSpacing(8);
+    mainLayout->addStretch();
 
-    // Circular progress widget (ring only, no text inside)
+    // Circular progress widget (clean, centered)
     circularProgress = new CircularProgress(this);
-    circularProgress->setFixedSize(100, 100);
+    circularProgress->setFixedSize(120, 120);
     circularProgress->setStatusText("");
 
     QHBoxLayout *progressLayout = new QHBoxLayout();
@@ -80,96 +80,70 @@ void UpdateDialog::setupUI()
     progressLayout->addStretch();
     mainLayout->addLayout(progressLayout);
 
-    // Status text (below the ring)
+    // Status text
     statusLabel = new QLabel(tr("Preparing download..."));
     statusLabel->setObjectName("statusLabel");
     statusLabel->setAlignment(Qt::AlignCenter);
     mainLayout->addWidget(statusLabel);
 
-    // Progress details
-    progressLabel = new QLabel(tr("0 MB / 0 MB"));
-    progressLabel->setObjectName("progressLabel");
-    progressLabel->setAlignment(Qt::AlignCenter);
-    mainLayout->addWidget(progressLabel);
-
-    // Speed
-    speedLabel = new QLabel(tr("Calculating..."));
-    speedLabel->setObjectName("speedLabel");
-    speedLabel->setAlignment(Qt::AlignCenter);
-    mainLayout->addWidget(speedLabel);
-
     // Spacer
-    mainLayout->addSpacing(8);
+    mainLayout->addStretch();
 
-    // Buttons
-    QHBoxLayout *buttonLayout = new QHBoxLayout();
-    buttonLayout->setSpacing(12);
-
+    // Cancel button only
     cancelButton = new QPushButton(tr("Cancel"));
     cancelButton->setObjectName("cancelButton");
-    cancelButton->setMinimumWidth(100);
+    cancelButton->setMinimumWidth(120);
+    cancelButton->setFixedHeight(36);
 
     restartButton = new QPushButton(tr("Restart Now"));
     restartButton->setObjectName("restartButton");
-    restartButton->setMinimumWidth(100);
+    restartButton->setMinimumWidth(120);
+    restartButton->setFixedHeight(36);
     restartButton->hide();
 
-    buttonLayout->addStretch();
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+    buttonLayout->setAlignment(Qt::AlignCenter);
+    buttonLayout->setSpacing(12);
     buttonLayout->addWidget(cancelButton);
     buttonLayout->addWidget(restartButton);
-    buttonLayout->addStretch();
     mainLayout->addLayout(buttonLayout);
 
     connect(cancelButton, &QPushButton::clicked, this, &UpdateDialog::onCancelClicked);
     connect(restartButton, &QPushButton::clicked, this, &UpdateDialog::onRestartClicked);
 
-    setFixedSize(320, 380);
+    setFixedSize(280, 320);
 }
 
 void UpdateDialog::applyStyle()
 {
     setStyleSheet(R"(
         QDialog {
-            background-color: #1a1a2e;
+            background-color: #0f0f1a;
             color: #e0e0e0;
         }
         #titleLabel {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #8b5cf6;
-            padding: 8px;
         }
         #versionLabel {
-            font-size: 13px;
-            color: #a0a0a0;
-        }
-        #statusLabel {
-            font-size: 13px;
-            color: #c0c0c0;
-            padding: 4px;
-        }
-        #progressLabel {
-            font-size: 11px;
+            font-size: 12px;
             color: #888888;
         }
-        #speedLabel {
-            font-size: 11px;
-            color: #666666;
+        #statusLabel {
+            font-size: 12px;
+            color: #c0c0c0;
         }
         QPushButton {
             background-color: #2d2d4a;
             color: #e0e0e0;
             border: 1px solid #3d3d5c;
             border-radius: 6px;
-            padding: 8px 16px;
             font-size: 12px;
         }
         QPushButton:hover {
             background-color: #3d3d5c;
             border-color: #8b5cf6;
-        }
-        QPushButton:pressed {
-            background-color: #8b5cf6;
         }
         #restartButton {
             background-color: #8b5cf6;

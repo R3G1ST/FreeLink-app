@@ -212,11 +212,11 @@ jobs:
           cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
           ninja
           cd ..
-          # Build updater.exe using g++ (MinGW)
+          # Build updater.exe using g++ (MinGW) - static linking
           echo "Building updater.exe..."
-          g++ -O2 -std=c++17 -o updater/updater.exe updater/updater.cpp
+          g++ -O2 -std=c++17 -static -o updater/updater.exe updater/updater.cpp
           if [ $? -eq 0 ]; then
-            echo "updater.exe built successfully"
+            echo "updater.exe built successfully (static)"
             ls -la updater/updater.exe
           else
             echo "ERROR: Failed to build updater.exe"
