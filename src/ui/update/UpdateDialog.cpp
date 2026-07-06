@@ -344,32 +344,26 @@ void UpdateDialog::createUpdateScript()
     QString extractDir = appDir + "/_update_temp";
 
 #ifdef Q_OS_WIN
-    scriptPath = appDir + "/_update.bat";
+    scriptPath = appDir + "/_update.ps1";
     QFile script(scriptPath);
     if (script.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        // Write UTF-8 BOM for Windows batch Unicode support
-        script.write("\xEF\xBB\xBF");
         QTextStream out(&script);
         out.setEncoding(QStringConverter::Utf8);
-        out << "@echo off\n";
-        out << "chcp 65001 >nul\n";
-        out << "timeout /t 2 /nobreak > nul\n";
-        out << "taskkill /f /im FreeLink.exe > nul 2>&1\n";
-        out << "timeout /t 1 /nobreak > nul\n";
-
-        // Copy new files
-        out << "xcopy /E /Y /I \"" << extractDir << "\\*\" \"" << appDir << "\"\n";
-
-        // Cleanup
-        out << "rmdir /S /Q \"" << extractDir << "\"\n";
-        out << "del /Q \"" << appDir << "\\_update.zip\" 2>nul\n";
-
-        // Restart app
-        out << "start \"\" \"" << appDir << "\\FreeLink.exe\"\n";
-
-        // Delete self (delayed)
-        out << "del /Q \"" << appDir << "\\_update.bat\" 2>nul\n";
-
+        out << "# FreeLink Updater - PowerShell script\n";
+        out << "Start-Sleep -Seconds 2\n";
+        out << "Stop-Process -Name FreeLink -Force -ErrorAction SilentlyContinue\n";
+        out << "Start-Sleep -Seconds 1\n";
+        out << "\n";
+        out << "$src = '" << extractDir << "'\n";
+        out << "$dst = '" << appDir << "'\n";
+        out << "\n";
+        out << "Copy-Item -Path \"$src\\*\" -Destination $dst -Recurse -Force\n";
+        out << "\n";
+        out << "Remove-Item -Path $src -Recurse -Force -ErrorAction SilentlyContinue\n";
+        out << "Remove-Item -Path \"$dst\\_update.zip\" -Force -ErrorAction SilentlyContinue\n";
+        out << "Remove-Item -Path \"$dst\\_update.ps1\" -Force -ErrorAction SilentlyContinue\n";
+        out << "\n";
+        out << "Start-Process -FilePath \"$dst\\FreeLink.exe\"\n";
         script.close();
     }
 #else
@@ -398,8 +392,8 @@ void UpdateDialog::restartApp()
     QString scriptPath;
 
 #ifdef Q_OS_WIN
-    scriptPath = appDir + "/_update.bat";
-    QProcess::startDetached("cmd", {"/c", scriptPath});
+    scriptPath = appDir + "/_update.ps1";
+    QProcess::startDetached("powershell", {"-ExecutionPolicy", "Bypass", "-File", scriptPath});
 #else
     scriptPath = appDir + "/_update.sh";
     QProcess::startDetached("sh", {scriptPath});
