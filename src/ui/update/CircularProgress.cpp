@@ -147,13 +147,14 @@ void CircularProgress::paintEvent(QPaintEvent *event)
 
     // Glow effect
     if (m_glowRadius > 0 && m_state == Downloading) {
-        QRadialGradient glowGrad(centerX, centerY, radius + m_glowRadius);
+        int glowR = static_cast<int>(radius + m_glowRadius);
+        QRadialGradient glowGrad(centerX, centerY, glowR);
         glowGrad.setColorAt(0, QColor(139, 92, 246, 40));
         glowGrad.setColorAt(0.7, QColor(139, 92, 246, 10));
         glowGrad.setColorAt(1, QColor(139, 92, 246, 0));
         painter.setPen(Qt::NoPen);
         painter.setBrush(glowGrad);
-        painter.drawEllipse(QPoint(centerX, centerY), radius + m_glowRadius, radius + m_glowRadius);
+        painter.drawEllipse(QPoint(centerX, centerY), glowR, glowR);
     }
 
     // Background circle
