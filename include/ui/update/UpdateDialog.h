@@ -12,6 +12,8 @@
 #include <QNetworkAccessManager>
 #include <QTemporaryFile>
 #include <QProcess>
+#include <QElapsedTimer>
+#include <QTimer>
 
 class UpdateDialog : public QDialog
 {
