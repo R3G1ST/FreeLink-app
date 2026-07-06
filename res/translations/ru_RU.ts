@@ -4705,6 +4705,10 @@ This backup may have been created with a</source>
 Your local edits are preserved.</source>
             <translation>Перезагружать профиль при автообновлении подписок. Локальные правки сохраняются.</translation>
         </message>
+        <message>
+            <source>Restore from a backup file. You can choose which parts to restore; each selected part replaces the current data. The application restarts after restore.</source>
+            <translation>Восстановление из файла резервной копии. Выберите части для восстановления; каждая заменяет текущие данные. Приложение перезапустится после восстановления.</translation>
+        </message>
     </context>
     <context>
         <name>SpeedWidget</name>
