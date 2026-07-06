@@ -97,6 +97,23 @@ int main(int argc, char* argv[]) {
     QApplication::setQuitOnLastWindowClosed(false);
     QApplication a(argc, argv);
 
+    // Set FreeLink Dark palette globally - forces all widgets to use correct background
+    QPalette pal = a.palette();
+    pal.setColor(QPalette::Window, QColor("#0f0f1a"));
+    pal.setColor(QPalette::WindowText, QColor("#e0e0e0"));
+    pal.setColor(QPalette::Base, QColor("#0f0f1a"));
+    pal.setColor(QPalette::AlternateBase, QColor("#12121f"));
+    pal.setColor(QPalette::ToolTipBase, QColor("#1a1a2e"));
+    pal.setColor(QPalette::ToolTipText, QColor("#e0e0e0"));
+    pal.setColor(QPalette::Text, QColor("#e0e0e0"));
+    pal.setColor(QPalette::Button, QColor("#1a1a2e"));
+    pal.setColor(QPalette::ButtonText, QColor("#c0c0c0"));
+    pal.setColor(QPalette::BrightText, QColor("#ffffff"));
+    pal.setColor(QPalette::Link, QColor("#8b5cf6"));
+    pal.setColor(QPalette::Highlight, QColor("#8b5cf6"));
+    pal.setColor(QPalette::HighlightedText, QColor("#ffffff"));
+    a.setPalette(pal);
+
 #ifdef Q_OS_MACOS
     // Install before the event loop so launch-by-deeplink FileOpen events are caught.
     a.installEventFilter(new MacDeeplinkFilter(&a));
