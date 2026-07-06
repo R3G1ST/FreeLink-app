@@ -361,8 +361,8 @@ namespace Subscription {
             if (!ok) return;
         }
 
-        // Wireguard
-        if (str.startsWith("wg://")) {
+        // Wireguard (wg:// or wireguard://)
+        if (str.startsWith("wg://") || str.startsWith("wireguard://")) {
             ent = Configs::ProfilesRepo::NewProfile("wireguard");
             auto ok = ent->Wireguard()->ParseFromLink(str);
             if (!ok) return;

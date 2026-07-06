@@ -15,20 +15,35 @@ namespace Configs {
 
         address = url.host();
         port = url.port();
+        // Try both wg:// (snake_case) and wireguard:// (camelCase) parameter names
         if (query.hasQueryItem("public_key")) public_key = query.queryItemValue("public_key");
+        else if (query.hasQueryItem("publicKey")) public_key = query.queryItemValue("publicKey");
         if (query.hasQueryItem("peer_public_key")) public_key = query.queryItemValue("peer_public_key");
         if (query.hasQueryItem("pre_shared_key")) pre_shared_key = query.queryItemValue("pre_shared_key");
+        else if (query.hasQueryItem("preSharedKey")) pre_shared_key = query.queryItemValue("preSharedKey");
         if (query.hasQueryItem("reserved")) {
             QString rawReserved = query.queryItemValue("reserved");
             if (!rawReserved.isEmpty()) {
-                for (const auto& item : rawReserved.split("-")) {
-                    int val = item.toInt();
-                    if (val > 0) reserved.append(val);
+                // Handle both string ("U4An" base64) and array format ([209,98,59])
+                if (rawReserved.startsWith("[")) {
+                    // Array format: [209,98,59]
+                    QStringList parts = rawReserved.replace("[", "").replace("]", "").split(",");
+                    for (const auto& item : parts) {
+                        int val = item.trimmed().toInt();
+                        if (val > 0) reserved.append(val);
+                    }
+                } else {
+                    // String format or dash-separated
+                    for (const auto& item : rawReserved.split("-")) {
+                        int val = item.toInt();
+                        if (val > 0) reserved.append(val);
+                    }
                 }
             }
         }
         if (query.hasQueryItem("persistent_keepalive_interval")) persistent_keepalive = query.queryItemValue("persistent_keepalive_interval").toInt();
-        
+        else if (query.hasQueryItem("persistentKeepalive")) persistent_keepalive = query.queryItemValue("persistentKeepalive").toInt();
+
         return true;
     }
 
@@ -138,25 +153,47 @@ namespace Configs {
             return !private_key.isEmpty() && !peer->public_key.isEmpty();
         }
         
-        // Standard wg:// URL format
+        // Standard wg:// or wireguard:// URL format
         auto url = QUrl(link);
         if (!url.isValid()) return false;
         auto query = QUrlQuery(url.query());
 
         outbound::ParseFromLink(link);
 
+        // Try both wg:// (snake_case) and wireguard:// (camelCase) parameter names
         if (query.hasQueryItem("private_key")) private_key = query.queryItemValue("private_key");
+        else if (query.hasQueryItem("privateKey")) private_key = query.queryItemValue("privateKey");
+
         peer->ParseFromLink(link);
-        
+
+        // Address: try local_address (wg://) then address (wireguard://)
         QString rawLocalAddr = query.queryItemValue("local_address");
+        if (rawLocalAddr.isEmpty()) rawLocalAddr = query.queryItemValue("address");
         if (!rawLocalAddr.isEmpty()) {
-            address = rawLocalAddr.split("-");
+            address = rawLocalAddr.replace("/32", "").replace("/128", "").split("-");
+            if (address.size() == 1) address = rawLocalAddr.replace("/32", "").replace("/128", "").split(",");
         }
-        
+
         if (query.hasQueryItem("mtu")) mtu = query.queryItemValue("mtu").toInt();
         if (query.hasQueryItem("use_system_interface")) system = query.queryItemValue("use_system_interface") == "true";
         if (query.hasQueryItem("workers")) worker_count = query.queryItemValue("workers").toInt();
         if (query.hasQueryItem("udp_timeout")) udp_timeout = query.queryItemValue("udp_timeout");
+
+        // DNS
+        if (query.hasQueryItem("dns")) {
+            // WireGuard DNS is informational for now
+        }
+
+        // Allowed IPs (wireguard:// format)
+        if (query.hasQueryItem("allowedIPs")) {
+            QString allowedIPs = query.queryItemValue("allowedIPs");
+            if (address.isEmpty()) address = allowedIPs.split(",");
+        }
+
+        // Persistent keepalive (wireguard:// format)
+        if (query.hasQueryItem("persistentKeepalive")) {
+            peer->persistent_keepalive = query.queryItemValue("persistentKeepalive").toInt();
+        }
 
         if (query.queryItemValue("enable_amnezia") == "true") enable_amnezia = true;
         if (query.hasQueryItem("jc")) jc = query.queryItemValue("jc").toInt(), enable_amnezia = true;
