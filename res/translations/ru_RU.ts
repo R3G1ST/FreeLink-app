@@ -2110,7 +2110,7 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         </message>
         <message>
             <source>Workers</source>
-            <translation>Workers</translation>
+            <translation>Потоки</translation>
         </message>
         <message>
             <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;persistent_keepalive_interval in seconds&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -2145,7 +2145,7 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         </message>
         <message>
             <source>Flow</source>
-            <translation>Flow</translation>
+            <translation>Поток</translation>
         </message>
     </context>
     <context>
@@ -2886,7 +2886,7 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         </message>
         <message>
             <source>Outbound</source>
-            <translation>Outbound</translation>
+            <translation>Исходящее</translation>
         </message>
         <message>
             <source>Click To Toggle sort by Traffic</source>
