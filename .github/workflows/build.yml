@@ -213,7 +213,14 @@ jobs:
           ninja
           cd ..
           # Build updater.exe using g++ (MinGW)
+          echo "Building updater.exe..."
           g++ -O2 -std=c++17 -o updater/updater.exe updater/updater.cpp
+          if [ $? -eq 0 ]; then
+            echo "updater.exe built successfully"
+            ls -la updater/updater.exe
+          else
+            echo "ERROR: Failed to build updater.exe"
+          fi
           ./script/deploy_windows.sh
       - name: Linux - Generate MakeFile and Build
         shell: bash
