@@ -2838,6 +2838,10 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Проверить обновления</translation>
     </message>
     <message>
+        <source>Tools</source>
+        <translation>Инструменты</translation>
+    </message>
+    <message>
         <source>Traffic Graph</source>
         <translation>График соединения</translation>
     </message>
