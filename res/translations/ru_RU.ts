@@ -4650,6 +4650,56 @@ Release note:
             <source>verifyPeerCertByName: verify the peer certificate against this name instead of the SNI.</source>
             <translation>verifyPeerCertByName: проверять сертификат пира по этому имени вместо имени хоста.</translation>
         </message>
+        <message>
+            <source>%1 MB/s • %2</source>
+            <translation>%1 МБ/с • %2</translation>
+        </message>
+        <message>
+            <source>%1 min remaining</source>
+            <translation>осталось %1 мин</translation>
+        </message>
+        <message>
+            <source>%1 sec remaining</source>
+            <translation>осталось %1 сек</translation>
+        </message>
+        <message>
+            <source>Download complete!</source>
+            <translation>Скачивание завершено!</translation>
+        </message>
+        <message>
+            <source>Download failed</source>
+            <translation>Ошибка скачивания</translation>
+        </message>
+        <message>
+            <source>Downloading update</source>
+            <translation>Скачивание обновления</translation>
+        </message>
+        <message>
+            <source>Failed to copy update file</source>
+            <translation>Не удалось скопировать файл обновления</translation>
+        </message>
+        <message>
+            <source>Preparing update</source>
+            <translation>Подготовка обновления</translation>
+        </message>
+        <message>
+            <source>Profiles that use an extra core can only be the final hop in the chain.</source>
+            <translation>Профили с дополнительным ядром могут быть только последним звеном цепочки.</translation>
+        </message>
+        <message>
+            <source>Unsupported backup format version: %1.
+This backup may have been created with a</source>
+            <translation>Неподдерживаемая версия формата: %1.
+Возможно, копия создана в более новой версии.</translation>
+        </message>
+        <message>
+            <source>Update applied! Restarting</source>
+            <translation>Обновление применено! Перезапуск</translation>
+        </message>
+        <message>
+            <source>updater.exe not found</source>
+            <translation>updater.exe не найден</translation>
+        </message>
     </context>
     <context>
         <name>SpeedWidget</name>
