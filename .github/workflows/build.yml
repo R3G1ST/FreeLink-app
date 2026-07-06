@@ -212,10 +212,8 @@ jobs:
           cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
           ninja
           cd ..
-          # Build updater.exe
-          cd updater
-          cl /EHsc /O2 /std:c++17 updater.cpp /Fe:updater.exe
-          cd ..
+          # Build updater.exe using g++ (MinGW)
+          g++ -O2 -std=c++17 -o updater/updater.exe updater/updater.cpp
           ./script/deploy_windows.sh
       - name: Linux - Generate MakeFile and Build
         shell: bash
