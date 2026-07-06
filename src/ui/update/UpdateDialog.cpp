@@ -194,8 +194,9 @@ void UpdateDialog::startUpdate(const QString &url, const QString &version)
     }
 
     // Start download
-    QNetworkRequest request(QUrl(downloadUrl));
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    QNetworkRequest request;
+    request.setUrl(QUrl(downloadUrl));
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
     currentReply = networkManager->get(request);
 
     connect(currentReply, &QNetworkReply::downloadProgress,
