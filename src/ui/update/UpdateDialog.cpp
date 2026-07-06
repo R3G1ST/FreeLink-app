@@ -347,8 +347,12 @@ void UpdateDialog::createUpdateScript()
     scriptPath = appDir + "/_update.bat";
     QFile script(scriptPath);
     if (script.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        // Write UTF-8 BOM for Windows batch Unicode support
+        script.write("\xEF\xBB\xBF");
         QTextStream out(&script);
+        out.setEncoding(QStringConverter::Utf8);
         out << "@echo off\n";
+        out << "chcp 65001 >nul\n";
         out << "timeout /t 2 /nobreak > nul\n";
         out << "taskkill /f /im FreeLink.exe > nul 2>&1\n";
         out << "timeout /t 1 /nobreak > nul\n";
@@ -359,10 +363,12 @@ void UpdateDialog::createUpdateScript()
         // Cleanup
         out << "rmdir /S /Q \"" << extractDir << "\"\n";
         out << "del /Q \"" << appDir << "\\_update.zip\" 2>nul\n";
-        out << "del /Q \"" << appDir << "\\_update.bat\" 2>nul\n";
 
         // Restart app
         out << "start \"\" \"" << appDir << "\\FreeLink.exe\"\n";
+
+        // Delete self (delayed)
+        out << "del /Q \"" << appDir << "\\_update.bat\" 2>nul\n";
 
         script.close();
     }
@@ -378,8 +384,8 @@ void UpdateDialog::createUpdateScript()
         out << "cp -r \"" << extractDir << "/\"* \"" << appDir << "/\"\n";
         out << "rm -rf \"" << extractDir << "\"\n";
         out << "rm -f \"" << appDir << "/_update.zip\"\n";
-        out << "rm -f \"" << scriptPath << "\"\n";
         out << "\"$appDir/FreeLink\" &\n";
+        out << "rm -f \"" << scriptPath << "\"\n";
         script.close();
         script.setPermissions(QFile::ExeOwner | QFile::ReadOwner | QFile::WriteOwner);
     }

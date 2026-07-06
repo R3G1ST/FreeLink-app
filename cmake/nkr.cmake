@@ -1,5 +1,6 @@
 # Release
-set(NKR_VERSION "$ENV{INPUT_VERSION}")
+string(REGEX REPLACE "^v" "" CLEAN_VERSION "$ENV{INPUT_VERSION}")
+set(NKR_VERSION "${CLEAN_VERSION}")
 add_compile_definitions(NKR_VERSION=\"${NKR_VERSION}\")
 
 # Debug
