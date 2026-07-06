@@ -156,7 +156,15 @@ namespace Configs {
         // Standard wg:// or wireguard:// URL format
         auto url = QUrl(link);
         if (!url.isValid()) return false;
-        auto query = QUrlQuery(url.query());
+        QString rawQuery = url.query();
+        auto query = QUrlQuery(rawQuery);
+
+        // Handle double-encoded query strings (from FreeLink VPN panel)
+        if (!query.hasQueryItem("privateKey") && !query.hasQueryItem("private_key") && !query.hasQueryItem("address")) {
+            // Try URL-decoding the query string
+            QString decoded = QUrl::fromPercentEncoding(rawQuery.toUtf8());
+            query = QUrlQuery(decoded);
+        }
 
         outbound::ParseFromLink(link);
 
