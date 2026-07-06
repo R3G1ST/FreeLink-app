@@ -330,62 +330,29 @@ void UpdateDialog::extractAndApplyUpdate()
 
 void UpdateDialog::createUpdateScript()
 {
-    QString appDir = QApplication::applicationDirPath();
-    QString extractDir = appDir + "/_update_temp";
-
-#ifdef Q_OS_WIN
-    // Write script to %TEMP% to avoid Cyrillic path issues with PowerShell -File
-    QString tempDir = QDir::tempPath();
-    QString scriptPath = tempDir + "/freelink_update.ps1";
-    QFile script(scriptPath);
-    if (script.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream out(&script);
-        out.setEncoding(QStringConverter::Utf8);
-        out << "# FreeLink Updater\n";
-        out << "Start-Sleep -Seconds 2\n";
-        out << "Stop-Process -Name FreeLink -Force -ErrorAction SilentlyContinue\n";
-        out << "Start-Sleep -Seconds 1\n";
-        out << "\n";
-        out << "$dst = '" << appDir << "'\n";
-        // ZIP contains root FreeLink/ folder, so extract contents from there
-        out << "$src = (Get-ChildItem -Path '" << extractDir << "' -Directory | Select-Object -First 1).FullName\n";
-        out << "if (-not $src) { $src = '" << extractDir << "' }\n";
-        out << "\n";
-        out << "Copy-Item -Path \"$src\\*\" -Destination $dst -Recurse -Force\n";
-        out << "\n";
-        out << "Remove-Item -Path '" << extractDir << "' -Recurse -Force -ErrorAction SilentlyContinue\n";
-        out << "Remove-Item -Path \"$dst\\_update.zip\" -Force -ErrorAction SilentlyContinue\n";
-        out << "\n";
-        out << "Start-Process -FilePath \"$dst\\FreeLink.exe\"\n";
-        out << "\n";
-        out << "Remove-Item -Path '$env:TEMP\\freelink_update.ps1' -Force -ErrorAction SilentlyContinue\n";
-        script.close();
-    }
-#else
-    QString scriptPath = appDir + "/_update.sh";
-    QFile script(scriptPath);
-    if (script.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream out(&script);
-        out << "#!/bin/sh\n";
-        out << "sleep 2\n";
-        out << "killall FreeLink 2>/dev/null\n";
-        out << "sleep 1\n";
-        out << "cp -r \"" << extractDir << "/\"* \"" << appDir << "/\"\n";
-        out << "rm -rf \"" << extractDir << "\"\n";
-        out << "rm -f \"" << appDir << "/_update.zip\"\n";
-        out << "\"$appDir/FreeLink\" &\n";
-        out << "rm -f \"" << scriptPath << "\"\n";
-        script.close();
-        script.setPermissions(QFile::ExeOwner | QFile::ReadOwner | QFile::WriteOwner);
-    }
-#endif
+    // No external script needed - we run commands via QProcess in restartApp()
 }
 
 void UpdateDialog::restartApp()
 {
 #ifdef Q_OS_WIN
-    QString scriptPath = QDir::tempPath() + "/freelink_update.ps1";
-    QProcess::startDetached("powershell", {"-ExecutionPolicy", "Bypass", "-File", scriptPath});
+    // Run PowerShell commands directly instead of script file
+    QString appDir = QApplication::applicationDirPath();
+    QString extractDir = appDir + "/_update_temp";
+
+    // Find the subdirectory inside _update_temp (ZIP has FreeLink/ root)
+    QString findCmd = QString(
+        "Stop-Process -Name FreeLink -Force -ErrorAction SilentlyContinue; "
+        "Start-Sleep -Seconds 2; "
+        "$src = (Get-ChildItem -Path '%1' -Directory | Select-Object -First 1).FullName; "
+        "if (-not $src) { $src = '%1' }; "
+        "Copy-Item -Path \"$src\\*\" -Destination '%2' -Recurse -Force; "
+        "Remove-Item -Path '%1' -Recurse -Force -ErrorAction SilentlyContinue; "
+        "Remove-Item -Path '%2\\_update.zip' -Force -ErrorAction SilentlyContinue; "
+        "Start-Process -FilePath '%2\\FreeLink.exe'"
+    ).arg(extractDir, appDir);
+
+    QProcess::startDetached("powershell", {"-ExecutionPolicy", "Bypass", "-Command", findCmd});
 #else
     QString scriptPath = QApplication::applicationDirPath() + "/_update.sh";
     QProcess::startDetached("sh", {scriptPath});
