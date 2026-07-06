@@ -62,11 +62,11 @@ SetCompressorDictSize 64
 ; =============================================
 ; VERSION INFO
 ; =============================================
-VIProductVersion "1.1.8.0"
+VIProductVersion "1.1.9.0"
 VIAddVersionKey "ProductName" "FreeLink"
 VIAddVersionKey "FileDescription" "FreeLink VPN Client Installer"
 VIAddVersionKey "LegalCopyright" "2026 FreeLink"
-VIAddVersionKey "FileVersion" "1.1.8"
+VIAddVersionKey "FileVersion" "1.1.9"
 
 UninstallText "This will uninstall FreeLink. Do you wish to continue?"
 
