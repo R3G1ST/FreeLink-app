@@ -2830,6 +2830,14 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Последняя попытка скачивания ещё не завершилась</translation>
     </message>
     <message>
+        <source>Traffic Stats</source>
+        <translation>Статистика трафика</translation>
+    </message>
+    <message>
+        <source>Check For Update</source>
+        <translation>Проверить обновления</translation>
+    </message>
+    <message>
         <source>Traffic Graph</source>
         <translation>График соединения</translation>
     </message>
@@ -3290,6 +3298,89 @@ Release note:
     <message>
         <source>Default outbound</source>
         <translation>Outbound по умолчанию</translation>
+    </message>
+</context>
+<context>
+    <name>UpdateDialog</name>
+    <message>
+        <source>FreeLink Update</source>
+        <translation>Обновление FreeLink</translation>
+    </message>
+    <message>
+        <source>Current: %1 → New: %2</source>
+        <translation>Текущая: %1 → Новая: %2</translation>
+    </message>
+    <message>
+        <source>Preparing download...</source>
+        <translation>Подготовка к скачиванию...</translation>
+    </message>
+    <message>
+        <source>0 MB / 0 MB</source>
+        <translation>0 МБ / 0 МБ</translation>
+    </message>
+    <message>
+        <source>Calculating...</source>
+        <translation>Расчёт...</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
+    </message>
+    <message>
+        <source>Restart Now</source>
+        <translation>Перезапустить</translation>
+    </message>
+    <message>
+        <source>Failed to create temp file</source>
+        <translation>Не удалось создать временный файл</translation>
+    </message>
+    <message>
+        <source>Download failed: %1</source>
+        <translation>Ошибка скачивания: %1</translation>
+    </message>
+    <message>
+        <source>Download complete! Ready to update.</source>
+        <translation>Скачивание завершено! Готово к обновлению.</translation>
+    </message>
+    <message>
+        <source>%1 MB / %2 MB</source>
+        <translation>%1 МБ / %2 МБ</translation>
+    </message>
+    <message>
+        <source>Complete</source>
+        <translation>Завершено</translation>
+    </message>
+    <message>
+        <source>%1 MB/s</source>
+        <translation>%1 МБ/с</translation>
+    </message>
+    <message>
+        <source>Downloading... %1 min remaining</source>
+        <translation>Скачивание... осталось %1 мин</translation>
+    </message>
+    <message>
+        <source>Downloading... %1 sec remaining</source>
+        <translation>Скачивание... осталось %1 сек</translation>
+    </message>
+    <message>
+        <source>Preparing update...</source>
+        <translation>Подготовка обновления...</translation>
+    </message>
+    <message>
+        <source>Update not ready</source>
+        <translation>Обновление не готово</translation>
+    </message>
+    <message>
+        <source>Extraction failed: %1</source>
+        <translation>Ошибка распаковки: %1</translation>
+    </message>
+    <message>
+        <source>Update applied! Restarting...</source>
+        <translation>Обновление применено! Перезапуск...</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation>Ошибка</translation>
     </message>
 </context>
 <context>
