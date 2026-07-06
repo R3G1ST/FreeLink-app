@@ -355,12 +355,14 @@ void UpdateDialog::createUpdateScript()
         out << "Stop-Process -Name FreeLink -Force -ErrorAction SilentlyContinue\n";
         out << "Start-Sleep -Seconds 1\n";
         out << "\n";
-        out << "$src = '" << extractDir << "'\n";
         out << "$dst = '" << appDir << "'\n";
+        // ZIP contains root FreeLink/ folder, so extract contents from there
+        out << "$src = (Get-ChildItem -Path '" << extractDir << "' -Directory | Select-Object -First 1).FullName\n";
+        out << "if (-not $src) { $src = '" << extractDir << "' }\n";
         out << "\n";
         out << "Copy-Item -Path \"$src\\*\" -Destination $dst -Recurse -Force\n";
         out << "\n";
-        out << "Remove-Item -Path $src -Recurse -Force -ErrorAction SilentlyContinue\n";
+        out << "Remove-Item -Path '" << extractDir << "' -Recurse -Force -ErrorAction SilentlyContinue\n";
         out << "Remove-Item -Path \"$dst\\_update.zip\" -Force -ErrorAction SilentlyContinue\n";
         out << "\n";
         out << "Start-Process -FilePath \"$dst\\FreeLink.exe\"\n";
