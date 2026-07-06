@@ -340,16 +340,17 @@ void UpdateDialog::extractAndApplyUpdate()
 void UpdateDialog::createUpdateScript()
 {
     QString appDir = QApplication::applicationDirPath();
-    QString scriptPath;
     QString extractDir = appDir + "/_update_temp";
 
 #ifdef Q_OS_WIN
-    scriptPath = appDir + "/_update.ps1";
+    // Write script to %TEMP% to avoid Cyrillic path issues with PowerShell -File
+    QString tempDir = QDir::tempPath();
+    QString scriptPath = tempDir + "/freelink_update.ps1";
     QFile script(scriptPath);
     if (script.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream out(&script);
         out.setEncoding(QStringConverter::Utf8);
-        out << "# FreeLink Updater - PowerShell script\n";
+        out << "# FreeLink Updater\n";
         out << "Start-Sleep -Seconds 2\n";
         out << "Stop-Process -Name FreeLink -Force -ErrorAction SilentlyContinue\n";
         out << "Start-Sleep -Seconds 1\n";
@@ -361,13 +362,14 @@ void UpdateDialog::createUpdateScript()
         out << "\n";
         out << "Remove-Item -Path $src -Recurse -Force -ErrorAction SilentlyContinue\n";
         out << "Remove-Item -Path \"$dst\\_update.zip\" -Force -ErrorAction SilentlyContinue\n";
-        out << "Remove-Item -Path \"$dst\\_update.ps1\" -Force -ErrorAction SilentlyContinue\n";
         out << "\n";
         out << "Start-Process -FilePath \"$dst\\FreeLink.exe\"\n";
+        out << "\n";
+        out << "Remove-Item -Path '$env:TEMP\\freelink_update.ps1' -Force -ErrorAction SilentlyContinue\n";
         script.close();
     }
 #else
-    scriptPath = appDir + "/_update.sh";
+    QString scriptPath = appDir + "/_update.sh";
     QFile script(scriptPath);
     if (script.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream out(&script);
@@ -388,14 +390,11 @@ void UpdateDialog::createUpdateScript()
 
 void UpdateDialog::restartApp()
 {
-    QString appDir = QApplication::applicationDirPath();
-    QString scriptPath;
-
 #ifdef Q_OS_WIN
-    scriptPath = appDir + "/_update.ps1";
+    QString scriptPath = QDir::tempPath() + "/freelink_update.ps1";
     QProcess::startDetached("powershell", {"-ExecutionPolicy", "Bypass", "-File", scriptPath});
 #else
-    scriptPath = appDir + "/_update.sh";
+    QString scriptPath = QApplication::applicationDirPath() + "/_update.sh";
     QProcess::startDetached("sh", {scriptPath});
 #endif
 
