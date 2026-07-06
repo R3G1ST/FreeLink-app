@@ -15,6 +15,7 @@
 #include "include/global/Configs.hpp"
 
 #include "include/ui/mainwindow_interface.h"
+#include "include/ui/SplashScreen.h"
 #include "include/stats/traffic/TrafficStatsManager.hpp"
 
 #ifdef Q_OS_WIN
@@ -295,7 +296,35 @@ int main(int argc, char* argv[]) {
     });
 #endif
 
+    // Show splash screen
+    SplashScreen splash;
+    splash.show();
+    splash.showStatus("Загрузка конфигурации...");
+    splash.setProgress(0.1);
+    QApplication::processEvents();
+
+    // Init database
+    splash.showStatus("Инициализация базы данных...");
+    splash.setProgress(0.3);
+    QApplication::processEvents();
+
+    // Init traffic stats
+    splash.showStatus("Загрузка статистики...");
+    splash.setProgress(0.5);
+    QApplication::processEvents();
+
+    splash.showStatus("Настройка интерфейса...");
+    splash.setProgress(0.7);
+    QApplication::processEvents();
+
     UI_InitMainWindow();
+
+    splash.showStatus("Готово!");
+    splash.setProgress(1.0);
+    QApplication::processEvents();
+
+    // Fade out splash
+    splash.fadeOut();
 
     // Deliver a deeplink passed on the command line (cold start), and replay any that
     // arrived during startup (e.g. a macOS FileOpen event before the window existed).

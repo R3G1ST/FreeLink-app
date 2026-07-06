@@ -4542,6 +4542,114 @@ Release note:
             <source>use tailscale dns as the remote dns</source>
             <translation>Использовать DNS Tailscale как удалённый DNS</translation>
         </message>
+        <message>
+            <source>App</source>
+            <translation>Приложение</translation>
+        </message>
+        <message>
+            <source>By App</source>
+            <translation>По приложению</translation>
+        </message>
+        <message>
+            <source>By Profile</source>
+            <translation>По профилю</translation>
+        </message>
+        <message>
+            <source>Enable mixed-case SNI for profiles whose TLS Tricks setting is on</source>
+            <translation>Включить смешанный регистр SNI для профилей с включёнными TLS-трюками</translation>
+        </message>
+        <message>
+            <source>Fetch</source>
+            <translation>Загрузить</translation>
+        </message>
+        <message>
+            <source>Fetch the URL and replace the current rules with the fetched ones.</source>
+            <translation>Загрузить URL и заменить текущие правила загруженными.</translation>
+        </message>
+        <message>
+            <source>Fetch the URL and show the routing profile without changing the current rules.</source>
+            <translation>Загрузить URL и показать профиль маршрутизации без замены текущих правил.</translation>
+        </message>
+        <message>
+            <source>Fragment</source>
+            <translation>Фрагментация</translation>
+        </message>
+        <message>
+            <source>Generate a Cloudflare WARP account and fill the key, address and endpoint fields above.</source>
+            <translation>Сгенерировать аккаунт Cloudflare WARP и заполнить ключ, адрес и endpoint.</translation>
+        </message>
+        <message>
+            <source>Group</source>
+            <translation>Группа</translation>
+        </message>
+        <message>
+            <source>Import</source>
+            <translation>Импорт</translation>
+        </message>
+        <message>
+            <source>Period:</source>
+            <translation>Период:</translation>
+        </message>
+        <message>
+            <source>Profile</source>
+            <translation>Профиль</translation>
+        </message>
+        <message>
+            <source>Re-fetch this profile from the URL when subscriptions auto-update. Your local edits are preserved.</source>
+            <translation>Перезагружать профиль при автообновлении подписок. Локальные правки сохраняются.</translation>
+        </message>
+        <message>
+            <source>Refresh</source>
+            <translation>Обновить</translation>
+        </message>
+        <message>
+            <source>Size</source>
+            <translation>Размер</translation>
+        </message>
+        <message>
+            <source>Sleep</source>
+            <translation>Пауза</translation>
+        </message>
+        <message>
+            <source>TLS Tricks</source>
+            <translation>TLS-трюки</translation>
+        </message>
+        <message>
+            <source>This is especially important and it is recommended to use the default value of "local-dns":</source>
+            <translation>Особенно важно — рекомендуется оставить значение по умолчанию "local-dns":</translation>
+        </message>
+        <message>
+            <source>Transport</source>
+            <translation>Транспорт</translation>
+        </message>
+        <message>
+            <source>Xmux</source>
+            <translation>Xmux</translation>
+        </message>
+        <message>
+            <source>args to pass to the executable. You can insert a single %s as a placeholder for the config path.</source>
+            <translation>Аргументы для исполняемого файла. Используйте %s как заполнитель пути конфигурации.</translation>
+        </message>
+        <message>
+            <source>contents of the config file that will be passed to the executable.</source>
+            <translation>Содержимое конфигурационного файла для исполняемого файла.</translation>
+        </message>
+        <message>
+            <source>pinnedPeerCertSha256: hex SHA256 of the peer certificate (comma-separated for multiple). Required for some servers.</source>
+            <translation>pinnedPeerCertSha256: hex SHA256 сертификата пира (через запятую для нескольких). Требуется для некоторых серверов.</translation>
+        </message>
+        <message>
+            <source>seqKey</source>
+            <translation>Ключ последовательности</translation>
+        </message>
+        <message>
+            <source>sessionKey</source>
+            <translation>Ключ сессии</translation>
+        </message>
+        <message>
+            <source>verifyPeerCertByName: verify the peer certificate against this name instead of the SNI.</source>
+            <translation>verifyPeerCertByName: проверять сертификат пира по этому имени вместо имени хоста.</translation>
+        </message>
     </context>
     <context>
         <name>SpeedWidget</name>

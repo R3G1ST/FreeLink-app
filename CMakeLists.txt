@@ -228,6 +228,11 @@ set(PROJECT_SOURCES
 
         src/ui/update/UpdateDialog.cpp
         include/ui/update/UpdateDialog.h
+        src/ui/update/CircularProgress.cpp
+        include/ui/update/CircularProgress.h
+
+        src/ui/SplashScreen.cpp
+        include/ui/SplashScreen.h
 
         src/ui/profile/ProxyItem.cpp
         include/ui/profile/ProxyItem.h

@@ -4,16 +4,16 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QProgressBar>
 #include <QPushButton>
 #include <QDialogButtonBox>
-#include <QMovie>
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
 #include <QTemporaryFile>
 #include <QProcess>
 #include <QElapsedTimer>
 #include <QTimer>
+
+#include "include/ui/update/CircularProgress.h"
 
 class UpdateDialog : public QDialog
 {
@@ -48,7 +48,7 @@ private:
     QLabel *statusLabel;
     QLabel *progressLabel;
     QLabel *speedLabel;
-    QProgressBar *progressBar;
+    CircularProgress *circularProgress;
     QPushButton *cancelButton;
     QPushButton *restartButton;
     QDialogButtonBox *buttonBox;
