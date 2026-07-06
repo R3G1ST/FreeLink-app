@@ -644,7 +644,14 @@ namespace Subscription {
                     auto ok = ent->SSH()->ParseFromClash(out);
                     if (!ok) continue;
                 }
-    
+
+                // WireGuard
+                if (out.type == "wireguard") {
+                    ent = Configs::ProfilesRepo::NewProfile("wireguard");
+                    auto ok = ent->Wireguard()->ParseFromClash(out);
+                    if (!ok) continue;
+                }
+
                 if (ent == nullptr) continue;
     
                 updated_order += ent;

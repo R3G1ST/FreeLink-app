@@ -196,6 +196,69 @@ namespace Configs {
         return true;
     }
 
+    bool wireguard::ParseFromClash(const clash::Proxies& object)
+    {
+        if (object.type != "wireguard") return false;
+        outbound::ParseFromClash(object);
+
+        // Private key from Proxies fields
+        if (!object.private_key.empty()) private_key = QString::fromStdString(object.private_key);
+
+        // MTU
+        if (object.mtu > 0) mtu = object.mtu;
+
+        // Peer information - either from peers array or from top-level fields
+        if (!object.peers.empty()) {
+            const auto& wgPeer = object.peers[0];
+            if (!wgPeer.server.empty()) {
+                peer->address = QString::fromStdString(wgPeer.server);
+                server = peer->address;
+            }
+            if (wgPeer.port > 0) {
+                peer->port = wgPeer.port;
+                server_port = peer->port;
+            }
+            if (!wgPeer.public_key.empty()) peer->public_key = QString::fromStdString(wgPeer.public_key);
+            if (!wgPeer.pre_shared_key.empty()) peer->pre_shared_key = QString::fromStdString(wgPeer.pre_shared_key);
+            if (wgPeer.reserved.has_value()) {
+                for (auto byte : wgPeer.reserved.value().value) {
+                    peer->reserved.append(byte);
+                }
+            }
+            // Allowed IPs -> address
+            for (const auto& ip : wgPeer.allowed_ips) {
+                address.append(QString::fromStdString(ip));
+            }
+        } else {
+            // Top-level fields (some Clash configs put them here)
+            if (!object.server.empty()) {
+                peer->address = QString::fromStdString(object.server);
+                server = peer->address;
+            }
+            if (object.port > 0) {
+                peer->port = object.port;
+                server_port = peer->port;
+            }
+            if (!object.public_key.empty()) peer->public_key = QString::fromStdString(object.public_key);
+            if (!object.pre_shared_key.empty()) peer->pre_shared_key = QString::fromStdString(object.pre_shared_key);
+            if (!object.ip.empty()) address.append(QString::fromStdString(object.ip));
+            if (!object.ipv6.empty()) address.append(QString::fromStdString(object.ipv6));
+            if (object.reserved.has_value()) {
+                for (auto byte : object.reserved.value().value) {
+                    peer->reserved.append(byte);
+                }
+            }
+        }
+
+        // Address from 'address' field as fallback
+        if (address.isEmpty() && !object.ip.empty()) {
+            address.append(QString::fromStdString(object.ip));
+        }
+
+        FixAddress();
+        return !private_key.isEmpty() && !peer->public_key.isEmpty();
+    }
+
     QString wireguard::ExportToLink()
     {
         QUrl url;
