@@ -50,8 +50,9 @@ UpdateDialog::~UpdateDialog()
 void UpdateDialog::setupUI()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->setSpacing(8);
-    mainLayout->setContentsMargins(20, 16, 20, 16);
+    mainLayout->setSpacing(12);
+    mainLayout->setContentsMargins(24, 20, 24, 20);
+    mainLayout->setAlignment(Qt::AlignHCenter);
 
     // Title
     titleLabel = new QLabel(tr("FreeLink Update"));
@@ -65,10 +66,13 @@ void UpdateDialog::setupUI()
     versionLabel->setAlignment(Qt::AlignCenter);
     mainLayout->addWidget(versionLabel);
 
-    // Circular progress widget
+    // Spacer
+    mainLayout->addSpacing(8);
+
+    // Circular progress widget (ring only, no text inside)
     circularProgress = new CircularProgress(this);
-    circularProgress->setFixedSize(120, 120);
-    circularProgress->setStatusText(tr("Preparing download..."));
+    circularProgress->setFixedSize(100, 100);
+    circularProgress->setStatusText("");
 
     QHBoxLayout *progressLayout = new QHBoxLayout();
     progressLayout->addStretch();
@@ -76,20 +80,30 @@ void UpdateDialog::setupUI()
     progressLayout->addStretch();
     mainLayout->addLayout(progressLayout);
 
+    // Status text (below the ring)
+    statusLabel = new QLabel(tr("Preparing download..."));
+    statusLabel->setObjectName("statusLabel");
+    statusLabel->setAlignment(Qt::AlignCenter);
+    mainLayout->addWidget(statusLabel);
+
     // Progress details
-    QHBoxLayout *detailLayout = new QHBoxLayout();
     progressLabel = new QLabel(tr("0 MB / 0 MB"));
     progressLabel->setObjectName("progressLabel");
+    progressLabel->setAlignment(Qt::AlignCenter);
+    mainLayout->addWidget(progressLabel);
+
+    // Speed
     speedLabel = new QLabel(tr("Calculating..."));
     speedLabel->setObjectName("speedLabel");
-    detailLayout->addWidget(progressLabel);
-    detailLayout->addStretch();
-    detailLayout->addWidget(speedLabel);
-    mainLayout->addLayout(detailLayout);
+    speedLabel->setAlignment(Qt::AlignCenter);
+    mainLayout->addWidget(speedLabel);
+
+    // Spacer
+    mainLayout->addSpacing(8);
 
     // Buttons
-    buttonBox = new QDialogButtonBox();
-    buttonBox->setObjectName("buttonBox");
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+    buttonLayout->setSpacing(12);
 
     cancelButton = new QPushButton(tr("Cancel"));
     cancelButton->setObjectName("cancelButton");
@@ -100,12 +114,16 @@ void UpdateDialog::setupUI()
     restartButton->setMinimumWidth(100);
     restartButton->hide();
 
-    buttonBox->addButton(cancelButton, QDialogButtonBox::RejectRole);
-    buttonBox->addButton(restartButton, QDialogButtonBox::AcceptRole);
-    mainLayout->addWidget(buttonBox);
+    buttonLayout->addStretch();
+    buttonLayout->addWidget(cancelButton);
+    buttonLayout->addWidget(restartButton);
+    buttonLayout->addStretch();
+    mainLayout->addLayout(buttonLayout);
 
     connect(cancelButton, &QPushButton::clicked, this, &UpdateDialog::onCancelClicked);
     connect(restartButton, &QPushButton::clicked, this, &UpdateDialog::onRestartClicked);
+
+    setFixedSize(320, 380);
 }
 
 void UpdateDialog::applyStyle()
@@ -125,7 +143,16 @@ void UpdateDialog::applyStyle()
             font-size: 13px;
             color: #a0a0a0;
         }
-        #progressLabel, #speedLabel {
+        #statusLabel {
+            font-size: 13px;
+            color: #c0c0c0;
+            padding: 4px;
+        }
+        #progressLabel {
+            font-size: 11px;
+            color: #888888;
+        }
+        #speedLabel {
             font-size: 11px;
             color: #666666;
         }
@@ -166,13 +193,13 @@ void UpdateDialog::startUpdate(const QString &url, const QString &version)
 
     // Set initial state
     circularProgress->setState(CircularProgress::Downloading);
-    circularProgress->setStatusText(tr("Downloading update"));
+        statusLabel->setText(tr("Downloading update"));
 
     // Create temp file
     tempFile = new QTemporaryFile(QDir::tempPath() + "/FreeLink-Update-XXXXXX.zip", this);
     if (!tempFile->open()) {
         circularProgress->setState(CircularProgress::Error);
-        circularProgress->setStatusText(tr("Failed to create temp file"));
+        statusLabel->setText(tr("Failed to create temp file"));
         return;
     }
 
@@ -221,7 +248,7 @@ void UpdateDialog::onDownloadProgress(qint64 received, qint64 total)
                 } else {
                     eta = tr("%1 sec remaining").arg(seconds);
                 }
-                circularProgress->setProgressText(tr("%1 MB/s • %2").arg(speed, 0, 'f', 1).arg(eta));
+                speedLabel->setText(tr("%1 MB/s • %2").arg(speed, 0, 'f', 1).arg(eta));
             }
         }
     }
@@ -233,7 +260,7 @@ void UpdateDialog::onDownloadFinished()
 
     if (currentReply->error() != QNetworkReply::NoError) {
         circularProgress->setState(CircularProgress::Error);
-        circularProgress->setStatusText(tr("Download failed"));
+        statusLabel->setText(tr("Download failed"));
         return;
     }
 
@@ -244,7 +271,7 @@ void UpdateDialog::onDownloadFinished()
 
     downloadComplete = true;
     circularProgress->setState(CircularProgress::Complete);
-    circularProgress->setStatusText(tr("Download complete!"));
+    statusLabel->setText(tr("Download complete!"));
     circularProgress->setProgress(1.0);
     progressLabel->setText(tr("%1 MB / %1 MB").arg(bytesTotal / (1024.0 * 1024.0), 0, 'f', 1));
     speedLabel->setText(tr("Complete"));
@@ -274,7 +301,7 @@ void UpdateDialog::onRestartClicked()
     }
 
     circularProgress->setState(CircularProgress::Extracting);
-    circularProgress->setStatusText(tr("Preparing update"));
+    statusLabel->setText(tr("Preparing update"));
     restartButton->setEnabled(false);
     cancelButton->setEnabled(false);
 
@@ -292,7 +319,7 @@ void UpdateDialog::extractAndApplyUpdate()
         QFile::remove(zipInApp);
         if (!QFile::copy(tempFile->fileName(), zipInApp)) {
             circularProgress->setState(CircularProgress::Error);
-            circularProgress->setStatusText(tr("Failed to copy update file"));
+            statusLabel->setText(tr("Failed to copy update file"));
             restartButton->setEnabled(true);
             cancelButton->setEnabled(true);
             return;
@@ -303,14 +330,14 @@ void UpdateDialog::extractAndApplyUpdate()
     QString updaterPath = appDir + "/updater.exe";
     if (!QFile::exists(updaterPath)) {
         circularProgress->setState(CircularProgress::Error);
-        circularProgress->setStatusText(tr("updater.exe not found"));
+        statusLabel->setText(tr("updater.exe not found"));
         restartButton->setEnabled(true);
         cancelButton->setEnabled(true);
         return;
     }
 
     circularProgress->setState(CircularProgress::Restarting);
-    circularProgress->setStatusText(tr("Update applied! Restarting"));
+    statusLabel->setText(tr("Update applied! Restarting"));
     circularProgress->setProgress(1.0);
 
     // Launch updater.exe (it handles extraction, copy, restart)
