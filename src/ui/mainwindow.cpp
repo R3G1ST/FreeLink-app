@@ -1140,7 +1140,7 @@ connect(ui->actionRestart_Proxy, &QAction::triggered, this, [=,this] {
         activateWindow();
     }
 
-    ui->data_view->setStyleSheet("background: transparent; border: none;");
+    // data_view styling is handled by FreeLink Dark theme CSS
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
