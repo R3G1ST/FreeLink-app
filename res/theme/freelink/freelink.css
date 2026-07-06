@@ -3,12 +3,13 @@ QPalette{background:#0f0f1a;color:#e0e0e0;}
 *{outline:0px;color:#e0e0e0;font-family:"Segoe UI","Noto Sans",Arial,sans-serif;}
 
 /* ===== Base ===== */
-QWidget{background:#0f0f1a;color:#e0e0e0;}
+QWidget{background:#0f0f1a;color:#e0e0e0;auto-fill-background:true;}
 QMainWindow,QDialog{background:#0f0f1a;}
 QFrame{border:none;background:transparent;}
 QGraphicsView{border:1px solid #1a1a2e;background:#0f0f1a;}
 QStackedWidget{background:transparent;}
 QAbstractScrollArea{background:#0f0f1a;border:none;}
+QTabWidget{background:#0f0f1a;}
 
 /* ===== Labels ===== */
 QLabel{color:#e0e0e0;background:transparent;border:none;}
@@ -106,10 +107,11 @@ QTabBar::tab:hover:!selected{color:#c0c0c0;background:#16162a;}
 /* ===== Tables ===== */
 QTableView,QTableWidget{
     border:1px solid #2d2d4a;border-radius:6px;
-    background:#0a0a14;alternate-background-color:#12121f;
+    background:#0f0f1a;alternate-background-color:#12121f;
     gridline-color:#1a1a2e;selection-background-color:#8b5cf6;selection-color:#ffffff;color:#e0e0e0;
+    auto-fill-background:true;
 }
-QTableView::item,QTableWidget::item{padding:4px;border-bottom:1px solid #1a1a2e;}
+QTableView::item,QTableWidget::item{padding:4px;border-bottom:1px solid #1a1a2e;background:#0f0f1a;}
 QTableView::item:hover,QTableWidget::item:hover{background:#1a1a2e;}
 QTableWidget::item:selected{background:#8b5cf6;color:#ffffff;}
 QHeaderView::section{background:#16162a;color:#c0c0c0;border:1px solid #2d2d4a;padding:6px;border-radius:4px;}
@@ -139,11 +141,12 @@ QListView::item:hover,QListWidget::item:hover{background:#1a1a2e;}
 
 /* ===== Log Console ===== */
 QTextBrowser{
-    background:#0a0a14;color:#c0c0c0;
+    background:#0f0f1a;color:#c0c0c0;
     border:1px solid #1a1a2e;border-radius:6px;
     font-family:Consolas,"Courier New",monospace;
+    auto-fill-background:true;
 }
-QTextBrowser:disabled{background:#0a0a14;color:#555;}
+QTextBrowser:disabled{background:#0f0f1a;color:#555;}
 
 /* ===== GroupBox ===== */
 QGroupBox{border:1px solid #2d2d4a;border-radius:6px;margin-top:12px;padding-top:12px;color:#c0c0c0;}
