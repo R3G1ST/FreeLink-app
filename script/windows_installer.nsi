@@ -62,11 +62,11 @@ SetCompressorDictSize 64
 ; =============================================
 ; VERSION INFO
 ; =============================================
-VIProductVersion "1.1.19.0"
+VIProductVersion "1.2.0.0"
 VIAddVersionKey "ProductName" "FreeLink"
 VIAddVersionKey "FileDescription" "FreeLink VPN Client Installer"
 VIAddVersionKey "LegalCopyright" "2026 FreeLink"
-VIAddVersionKey "FileVersion" "1.1.19"
+VIAddVersionKey "FileVersion" "1.2.0"
 
 UninstallText "This will uninstall FreeLink. Do you wish to continue?"
 
@@ -118,22 +118,10 @@ Section "FreeLink (Required)" SecMain
     File /oname=libcronet.dll "../deployment/windows-amd64/libcronet.dll"
     File /oname=FreeLinkCore.exe "../deployment/windows-amd64/FreeLinkCore.exe"
     File /oname=FreeLink.exe "../deployment/windows-amd64/FreeLink.exe"
-    ; updater.exe is downloaded from GitHub during install
+    ; Install updater.exe
+    File /oname=updater.exe "../deployment/windows-amd64/updater.exe"
   ${Else}
     Abort "This installer only supports 64-bit Windows."
-  ${EndIf}
-  
-  ; Download updater from GitHub (optional - don't abort if fails)
-  DetailPrint "Downloading updater..."
-  nsExec::ExecToLog 'curl -L -o "$INSTDIR\updater.exe" "${UPDATE_BASE_URL}/updater.exe" --connect-timeout 10 --retry 1 -f'
-  Pop $0
-  ${If} $0 != "0"
-    DetailPrint "Trying PowerShell download..."
-    nsExec::ExecToLog 'powershell -Command "Invoke-WebRequest -Uri \'${UPDATE_BASE_URL}/updater.exe\' -OutFile \'$INSTDIR\updater.exe\' -TimeoutSec 15"'
-    Pop $0
-  ${EndIf}
-  ${If} $0 != "0"
-    DetailPrint "Updater download failed - continuing without auto-update"
   ${EndIf}
   
   ; Shortcuts
