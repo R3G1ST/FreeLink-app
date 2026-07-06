@@ -1134,7 +1134,11 @@ connect(ui->actionRestart_Proxy, &QAction::triggered, this, [=,this] {
         });
     }
 
-    if (!Configs::dataManager->settingsRepo->flag_tray) show();
+    if (!Configs::dataManager->settingsRepo->flag_tray) {
+        show();
+        raise();
+        activateWindow();
+    }
 
     ui->data_view->setStyleSheet("background: transparent; border: none;");
 }
