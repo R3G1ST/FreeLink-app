@@ -4700,6 +4700,11 @@ This backup may have been created with a</source>
             <source>updater.exe not found</source>
             <translation>updater.exe не найден</translation>
         </message>
+        <message>
+            <source>Re-fetch this profile from the URL when subscriptions auto-update.
+Your local edits are preserved.</source>
+            <translation>Перезагружать профиль при автообновлении подписок. Локальные правки сохраняются.</translation>
+        </message>
     </context>
     <context>
         <name>SpeedWidget</name>
