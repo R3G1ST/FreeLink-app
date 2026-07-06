@@ -158,6 +158,86 @@ QScrollBar::handle:horizontal{background:#2d2d4a;border-radius:4px;min-width:30p
 QScrollBar::handle:horizontal:hover{background:#8b5cf6;}
 QScrollBar::add-line:horizontal,QScrollBar::sub-line:horizontal{width:0px;}
 
+/* ===== QTextBrowser (Log Console) ===== */
+QTextBrowser{
+    background-color:#0a0a14;
+    color:#c0c0c0;
+    border:1px solid #1a1a2e;
+    border-radius:4px;
+    font-family:Consolas,"Courier New",monospace;
+}
+QTextBrowser:disabled{
+    background-color:#0a0a14;
+    color:#555;
+}
+
+/* ===== QTableWidget / QTableView (Server List) ===== */
+QTableWidget{
+    background:#0a0a14;
+    color:#e0e0e0;
+    border:1px solid #1a1a2e;
+    gridline-color:#1a1a2e;
+    selection-background-color:#8b5cf6;
+    selection-color:#ffffff;
+}
+QTableWidget::item{
+    background:#0a0a14;
+    color:#e0e0e0;
+    padding:4px;
+    border-bottom:1px solid #1a1a2e;
+}
+QTableWidget::item:selected{
+    background:#8b5cf6;
+    color:#ffffff;
+}
+QTableWidget::item:hover{
+    background:#1a1a2e;
+}
+QHeaderView::section{
+    background:#16162a;
+    color:#c0c0c0;
+    border:1px solid #2d2d4a;
+    padding:4px;
+}
+QTableCornerButton::section{
+    background:#16162a;
+    border:1px solid #2d2d4a;
+}
+
+/* ===== QTreeView / QListView (Navigation) ===== */
+QTreeView{
+    background:#0a0a14;
+    color:#e0e0e0;
+    border:1px solid #1a1a2e;
+    alternate-background-color:#12121f;
+    selection-background-color:#8b5cf6;
+    selection-color:#ffffff;
+}
+QTreeView::item{
+    padding:4px;
+    border-bottom:1px solid #1a1a2e;
+}
+QTreeView::item:selected{
+    background:#8b5cf6;
+    color:#ffffff;
+}
+QTreeView::item:hover{
+    background:#1a1a2e;
+}
+
+/* ===== QSplitterHandle (Between panels) ===== */
+QSplitter::handle:horizontal{
+    background:#1a1a2e;
+    width:2px;
+}
+QSplitter::handle:vertical{
+    background:#1a1a2e;
+    height:2px;
+}
+QSplitter::handle:hover{
+    background:#8b5cf6;
+}
+
 /* ===== Slider ===== */
 QSlider::groove:horizontal{border:none;height:6px;background:#2d2d4a;border-radius:3px;}
 QSlider::handle:horizontal{background:#8b5cf6;border:none;width:16px;height:16px;margin:-5px 0;border-radius:8px;}
