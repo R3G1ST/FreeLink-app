@@ -254,6 +254,7 @@ void UpdateDialog::onDownloadFinished()
 
     // Write to temp file
     tempFile->write(currentReply->readAll());
+    tempFile->setAutoRemove(false);
     tempFile->close();
 
     downloadComplete = true;
