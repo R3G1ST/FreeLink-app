@@ -226,6 +226,9 @@ set(PROJECT_SOURCES
         include/ui/setting/dialog_hotkey.h
         include/ui/setting/dialog_hotkey.ui
 
+        src/ui/update/UpdateDialog.cpp
+        include/ui/update/UpdateDialog.h
+
         src/ui/profile/ProxyItem.cpp
         include/ui/profile/ProxyItem.h
         include/ui/profile/ProxyItem.ui

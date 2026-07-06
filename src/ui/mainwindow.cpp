@@ -22,6 +22,7 @@
 #include "include/ui/stats/dialog_traffic_stats.h"
 #include "include/ui/widget/StartStopButton.hpp"
 #include "include/ui/widget/StayOpenMenu.hpp"
+#include "include/ui/update/UpdateDialog.h"
 
 #include "3rdparty/qrcodegen.hpp"
 #include "3rdparty/qv2ray/v2/ui/LogHighlighter.hpp"
@@ -375,10 +376,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         USE_DIALOG(DialogTrafficStats)
     });
     connect(ui->actionCheck_For_Update, &QAction::triggered, this, [=,this] { runOnNewThread([=,this] { CheckUpdate(); }); });
-    if (!QFile::exists(QApplication::applicationDirPath() + "/updater") && !QFile::exists(QApplication::applicationDirPath() + "/updater.exe"))
-    {
-        ui->actionCheck_For_Update->setDisabled(true);
-    }
 
     // setup connection UI
     setupConnectionList();
@@ -1831,13 +1828,8 @@ void MainWindow::on_menu_exit_triggered() {
     prepare_exit();
     //
     if (exit_reason == 1) {
-        QDir::setCurrent(QApplication::applicationDirPath());
-#ifdef Q_OS_WIN
-        QFile::copy("./updater.exe", "./updater.old");
-        QProcess::startDetached("./updater.old", QStringList{});
-#else
-        QProcess::startDetached("./updater", QStringList{});
-#endif
+        // Update is handled by UpdateDialog - it creates _update.bat/_update.sh
+        // and restarts the app after we exit
     } else if (exit_reason == 2 || exit_reason == 3 || exit_reason == 4) {
         QDir::setCurrent(QApplication::applicationDirPath());
 
@@ -3742,35 +3734,17 @@ void MainWindow::CheckUpdate() {
         box.exec();
         //
         if (btn1 == box.clickedButton() && allow_updater) {
-            // Download Update
-            runOnNewThread([=,this] {
-                if (!mu_download_update.tryLock()) {
-                    runOnUiThread([=,this](){
-                        MessageBoxWarning(tr("Cannot start"), tr("Last download request has not finished yet"));
-                    });
-                    return;
+            // Show UpdateDialog with progress
+            UpdateDialog *updateDialog = new UpdateDialog(this);
+            connect(updateDialog, &UpdateDialog::updateFinished, this, [this](bool success) {
+                if (success) {
+                    this->exit_reason = 1;
+                    on_menu_exit_triggered();
                 }
-                QString errors;
-                if (!release_download_url.isEmpty()) {
-                    auto res = NetworkRequestHelper::DownloadAsset(release_download_url, "FreeLink.zip");
-                    if (!res.isEmpty()) {
-                        errors += res;
-                    }
-                }
-                mu_download_update.unlock();
-                runOnUiThread([=,this] {
-                    if (errors.isEmpty()) {
-                        auto q = QMessageBox::question(nullptr, QObject::tr("Update"),
-                                                       QObject::tr("Update is ready, restart to install?"));
-                        if (q == QMessageBox::StandardButton::Yes) {
-                            this->exit_reason = 1;
-                            on_menu_exit_triggered();
-                        }
-                    } else {
-                        MessageBoxWarning(tr("Failed to download update assets"), errors);
-                    }
-                });
             });
+            updateDialog->setAttribute(Qt::WA_DeleteOnClose);
+            updateDialog->startUpdate(release_download_url, assets_name);
+            updateDialog->exec();
         } else if (btn2 == box.clickedButton()) {
             QDesktopServices::openUrl(QUrl(release_url));
         }

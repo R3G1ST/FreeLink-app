@@ -1,4 +1,4 @@
-#include "UpdateDialog.h"
+#include "include/ui/update/UpdateDialog.h"
 #include <QApplication>
 #include <QDesktopServices>
 #include <QDir>
