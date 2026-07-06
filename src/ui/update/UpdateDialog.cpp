@@ -202,15 +202,11 @@ void UpdateDialog::onDownloadProgress(qint64 received, qint64 total)
 
         double receivedMB = received / (1024.0 * 1024.0);
         double totalMB = total / (1024.0 * 1024.0);
-        progressLabel->setText(tr("%1 MB / %2 MB")
-            .arg(receivedMB, 0, 'f', 1)
-            .arg(totalMB, 0, 'f', 1));
 
         // Calculate speed
         qint64 elapsed = timer.elapsed();
         if (elapsed > 0) {
             double speed = (received * 1000.0) / elapsed / (1024.0 * 1024.0);
-            speedLabel->setText(tr("%1 MB/s").arg(speed, 0, 'f', 1));
 
             // Calculate ETA
             if (speed > 0) {
@@ -222,7 +218,7 @@ void UpdateDialog::onDownloadProgress(qint64 received, qint64 total)
                 } else {
                     eta = tr("%1 sec remaining").arg(seconds);
                 }
-                speedLabel->setText(tr("%1 MB/s • %2").arg(speed, 0, 'f', 1).arg(eta));
+                statusLabel->setText(tr("%1 MB/s • %2").arg(speed, 0, 'f', 1).arg(eta));
             }
         }
     }
@@ -247,8 +243,6 @@ void UpdateDialog::onDownloadFinished()
     circularProgress->setState(CircularProgress::Complete);
     statusLabel->setText(tr("Download complete!"));
     circularProgress->setProgress(1.0);
-    progressLabel->setText(tr("%1 MB / %1 MB").arg(bytesTotal / (1024.0 * 1024.0), 0, 'f', 1));
-    speedLabel->setText(tr("Complete"));
 
     // Show restart button
     cancelButton->hide();

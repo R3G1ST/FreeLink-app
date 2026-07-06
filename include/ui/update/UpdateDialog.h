@@ -44,12 +44,9 @@ private:
     QLabel *titleLabel;
     QLabel *versionLabel;
     QLabel *statusLabel;
-    QLabel *progressLabel;
-    QLabel *speedLabel;
     CircularProgress *circularProgress;
     QPushButton *cancelButton;
     QPushButton *restartButton;
-    QDialogButtonBox *buttonBox;
 
     // Network
     QNetworkAccessManager *networkManager;
