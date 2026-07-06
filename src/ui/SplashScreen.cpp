@@ -1,6 +1,5 @@
 #include "include/ui/SplashScreen.h"
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QScreen>
 #include <QLinearGradient>
 #include <QFont>
