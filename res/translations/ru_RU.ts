@@ -4046,6 +4046,502 @@ Release note:
             <source>— page %1/%2</source>
             <translation>— страница %1/%2</translation>
         </message>
+        <message>
+            <source>Amnezia Settings</source>
+            <translation>Настройки Amnezia</translation>
+        </message>
+        <message>
+            <source>Auto update</source>
+            <translation>Автообновление</translation>
+        </message>
+        <message>
+            <source>Backup and Restore</source>
+            <translation>Резервное копирование и восстановление</translation>
+        </message>
+        <message>
+            <source>Bind Interface</source>
+            <translation>Интерфейс привязки</translation>
+        </message>
+        <message>
+            <source>Cache Capacity</source>
+            <translation>Ёмкость кеша</translation>
+        </message>
+        <message>
+            <source>Clear Group test result</source>
+            <translation>Очистить результат теста группы</translation>
+        </message>
+        <message>
+            <source>Click to sort by speed; right-click to choose total/down/up</source>
+            <translation>Нажмите для сортировки по скорости; ПКМ — выбор: всего/загрузка/отдача</translation>
+        </message>
+        <message>
+            <source>Click to sort by traffic; right-click to choose total/down/up</source>
+            <translation>Нажмите для сортировки по трафику; ПКМ — выбор: всего/загрузка/отдача</translation>
+        </message>
+        <message>
+            <source>Cookie Reply Packet Junk Size (S3)</source>
+            <translation>Размер мусора Cookie Reply (S3)</translation>
+        </message>
+        <message>
+            <source>Cookie Reply Packet Magic Header (H3)</source>
+            <translation>Magic Header Cookie Reply (H3)</translation>
+        </message>
+        <message>
+            <source>Create Backup...</source>
+            <translation>Создать резервную копию...</translation>
+        </message>
+        <message>
+            <source>Create a portable backup file. Choose which parts to include:</source>
+            <translation>Создание portable-файла резервной копии. Выберите части:</translation>
+        </message>
+        <message>
+            <source>Disable Cache</source>
+            <translation>Отключить кеш</translation>
+        </message>
+        <message>
+            <source>Disable Expire</source>
+            <translation>Отключить истечение</translation>
+        </message>
+        <message>
+            <source>Disable Private Range Bypass</source>
+            <translation>Отключить обход частных диапазонов</translation>
+        </message>
+        <message>
+            <source>Disable Traffic Aggregation</source>
+            <translation>Отключить агрегацию трафика</translation>
+        </message>
+        <message>
+            <source>ECH Server Name</source>
+            <translation>Имя сервера ECH</translation>
+        </message>
+        <message>
+            <source>Generate a Cloudflare WARP account and fill the key, address and endpoint fields</source>
+            <translation>Сгенерировать аккаунт Cloudflare WARP и заполнить ключ, адрес и endpoint</translation>
+        </message>
+        <message>
+            <source>IPv4 Bind Address</source>
+            <translation>Адрес привязки IPv4</translation>
+        </message>
+        <message>
+            <source>IPv6 Bind Address</source>
+            <translation>Адрес привязки IPv6</translation>
+        </message>
+        <message>
+            <source>Init Packet Junk Size (S1)</source>
+            <translation>Размер мусора инициирующего пакета (S1)</translation>
+        </message>
+        <message>
+            <source>Init Packet Magic Header (H1)</source>
+            <translation>Magic Header инициирующего пакета (H1)</translation>
+        </message>
+        <message>
+            <source>Junk Packet Count (Jc)</source>
+            <translation>Количество мусорных пакетов (Jc)</translation>
+        </message>
+        <message>
+            <source>Junk Packet Max Size (Jmax)</source>
+            <translation>Макс. размер мусорного пакета (Jmax)</translation>
+        </message>
+        <message>
+            <source>Junk Packet Min Size (Jmin)</source>
+            <translation>Мин. размер мусорного пакета (Jmin)</translation>
+        </message>
+        <message>
+            <source>Last 24 hours</source>
+            <translation>За 24 часа</translation>
+        </message>
+        <message>
+            <source>Last 30 days</source>
+            <translation>За 30 дней</translation>
+        </message>
+        <message>
+            <source>Last 7 days</source>
+            <translation>За 7 дней</translation>
+        </message>
+        <message>
+            <source>Last 90 days</source>
+            <translation>За 90 дней</translation>
+        </message>
+        <message>
+            <source>Multiplexing</source>
+            <translation>Мультиплексирование</translation>
+        </message>
+        <message>
+            <source>Pinned Cert SHA256</source>
+            <translation>Закреплённый сертификат SHA256</translation>
+        </message>
+        <message>
+            <source>Remote source</source>
+            <translation>Удалённый источник</translation>
+        </message>
+        <message>
+            <source>Resolve Domain for group</source>
+            <translation>Определить домен для группы</translation>
+        </message>
+        <message>
+            <source>Resolve out IP for group</source>
+            <translation>Определить внешний IP для группы</translation>
+        </message>
+        <message>
+            <source>Response Packet Junk Size (S2)</source>
+            <translation>Размер мусора ответа (S2)</translation>
+        </message>
+        <message>
+            <source>Response Packet Magic Header (H2)</source>
+            <translation>Magic Header ответа (H2)</translation>
+        </message>
+        <message>
+            <source>Restart Proxy On System Proxy Disable</source>
+            <translation>Перезапуск прокси при отключении системного прокси</translation>
+        </message>
+        <message>
+            <source>Restore from Backup...</source>
+            <translation>Восстановить из резервной копии...</translation>
+        </message>
+        <message>
+            <source>Restore from a backup file. You can choose which parts to restore; each selected part replaces the current data. This cannot be undone.</source>
+            <translation>Восстановление из файла. Выберите части; каждая заменяет текущие данные. Действие необратимо.</translation>
+        </message>
+        <message>
+            <source>Reverse Mapping</source>
+            <translation>Обратный маппинг</translation>
+        </message>
+        <message>
+            <source>Routing profiles auto update</source>
+            <translation>Автообновление профилей маршрутизации</translation>
+        </message>
+        <message>
+            <source>Signature Packet (I1)</source>
+            <translation>Пакет подписи (I1)</translation>
+        </message>
+        <message>
+            <source>Signature Packet (I2)</source>
+            <translation>Пакет подписи (I2)</translation>
+        </message>
+        <message>
+            <source>Signature Packet (I3)</source>
+            <translation>Пакет подписи (I3)</translation>
+        </message>
+        <message>
+            <source>Signature Packet (I4)</source>
+            <translation>Пакет подписи (I4)</translation>
+        </message>
+        <message>
+            <source>Signature Packet (I5)</source>
+            <translation>Пакет подписи (I5)</translation>
+        </message>
+        <message>
+            <source>Subscription auto update</source>
+            <translation>Автообновление подписок</translation>
+        </message>
+        <message>
+            <source>TLS Fragment</source>
+            <translation>TLS-фрагментация</translation>
+        </message>
+        <message>
+            <source>TLS Tricks Default On</source>
+            <translation>TLS-трюки включены по умолчанию</translation>
+        </message>
+        <message>
+            <source>This is especially important and it is recommended to use the default value of 30s</source>
+            <translation>Особенно важно — рекомендуется оставить значение по умолчанию 30 сек</translation>
+        </message>
+        <message>
+            <source>Traffic Pattern</source>
+            <translation>Паттерн трафика</translation>
+        </message>
+        <message>
+            <source>Traffic Statistics</source>
+            <translation>Статистика трафика</translation>
+        </message>
+        <message>
+            <source>Transport Packet Junk Size (S4)</source>
+            <translation>Размер мусора транспортного пакета (S4)</translation>
+        </message>
+        <message>
+            <source>Transport Packet Magic Header (H4)</source>
+            <translation>Magic Header транспортного пакета (H4)</translation>
+        </message>
+        <message>
+            <source>Update the selected remote routing profile, or all of them</source>
+            <translation>Обновить выбранный удалённый профиль или все</translation>
+        </message>
+        <message>
+            <source>Use the Advanced section to specify bind options</source>
+            <translation>Используйте раздел «Дополнительно» для настройки привязки</translation>
+        </message>
+        <message>
+            <source>Verify Cert Name</source>
+            <translation>Проверка имени сертификата</translation>
+        </message>
+        <message>
+            <source>Warp-bypass</source>
+            <translation>Обход через WARP</translation>
+        </message>
+        <message>
+            <source>cMaxReuseTimes</source>
+            <translation>Макс. повторных использований</translation>
+        </message>
+        <message>
+            <source>hKeepAlivePeriod</source>
+            <translation>Период keep-alive</translation>
+        </message>
+        <message>
+            <source>hMaxRequestTimes</source>
+            <translation>Макс. время запросов</translation>
+        </message>
+        <message>
+            <source>hMaxReusableSecs</source>
+            <translation>Макс. время повторного использования (сек)</translation>
+        </message>
+        <message>
+            <source>https://... (freelink://route link, base64, or JSON)</source>
+            <translation>https://... (ссылка freelink://route, base64 или JSON)</translation>
+        </message>
+        <message>
+            <source>maxConcurrency</source>
+            <translation>Макс. параллельность</translation>
+        </message>
+        <message>
+            <source>maxConnections</source>
+            <translation>Макс. соединений</translation>
+        </message>
+        <message>
+            <source>noGRPCHeader</source>
+            <translation>Без gRPC-заголовка</translation>
+        </message>
+        <message>
+            <source>noSSEHeader</source>
+            <translation>Без SSE-заголовка</translation>
+        </message>
+        <message>
+            <source>pinnedPeerCertSha256: hex SHA256 of the peer certificate (comma-separated for multiple)</source>
+            <translation>pinnedPeerCertSha256: hex SHA256 сертификата пира (через запятую для нескольких)</translation>
+        </message>
+        <message>
+            <source>scMaxBufferedPosts</source>
+            <translation>Макс. буферизованных POST</translation>
+        </message>
+        <message>
+            <source>scMaxEachPostBytes</source>
+            <translation>Макс. байт на POST-запрос</translation>
+        </message>
+        <message>
+            <source>scMinPostsIntervalMs</source>
+            <translation>Мин. интервал между POST (мс)</translation>
+        </message>
+        <message>
+            <source>scStreamUpServerSecs</source>
+            <translation>Секунды стрима на сервер</translation>
+        </message>
+        <message>
+            <source>seqPlacement</source>
+            <translation>Размещение последовательности</translation>
+        </message>
+        <message>
+            <source>sessionIDLength</source>
+            <translation>Длина session ID</translation>
+        </message>
+        <message>
+            <source>sessionIDTable</source>
+            <translation>Таблица session ID</translation>
+        </message>
+        <message>
+            <source>sessionPlacement</source>
+            <translation>Размещение сессии</translation>
+        </message>
+        <message>
+            <source>uplinkChunkSize</source>
+            <translation>Размер чанка аплинка</translation>
+        </message>
+        <message>
+            <source>uplinkDataKey</source>
+            <translation>Ключ данных аплинка</translation>
+        </message>
+        <message>
+            <source>uplinkDataPlacement</source>
+            <translation>Размещение данных аплинка</translation>
+        </message>
+        <message>
+            <source>uplinkHTTPMethod</source>
+            <translation>HTTP-метод аплинка</translation>
+        </message>
+        <message>
+            <source>verifyPeerCertByName: verify the peer certificate against this name instead of the hostname</source>
+            <translation>verifyPeerCertByName: проверять сертификат пира по этому имени вместо имени хоста</translation>
+        </message>
+        <message>
+            <source>xPaddingHeader</source>
+            <translation>Заголовок xPadding</translation>
+        </message>
+        <message>
+            <source>xPaddingKey</source>
+            <translation>Ключ xPadding</translation>
+        </message>
+        <message>
+            <source>xPaddingMethod</source>
+            <translation>Метод xPadding</translation>
+        </message>
+        <message>
+            <source>xPaddingObfsMode</source>
+            <translation>Режим обфускации xPadding</translation>
+        </message>
+        <message>
+            <source>xPaddingPlacement</source>
+            <translation>Размещение xPadding</translation>
+        </message>
+        <message>
+            <source>A DNS server for local use will be deployed on this port</source>
+            <translation>Локальный DNS-сервер будет запущен на этом порту</translation>
+        </message>
+        <message>
+            <source>Allows traffics destined for private ranges to be hijacked by tun</source>
+            <translation>Позволяет перехватывать трафик к частным диапазонам через TUN</translation>
+        </message>
+        <message>
+            <source>Custom implementation only: bytes per ClientHello fragment</source>
+            <translation>Только пользовательская реализация: байт на фрагмент ClientHello</translation>
+        </message>
+        <message>
+            <source>Custom implementation only: milliseconds to sleep between fragments</source>
+            <translation>Только пользовательская реализация: миллисекунды паузы между фрагментами</translation>
+        </message>
+        <message>
+            <source>Do not attempt to start as Admin unless explicitly required</source>
+            <translation>Не запускать от имени администратора, если это не требуется</translation>
+        </message>
+        <message>
+            <source>Does not affect the per-profile traffic counters in the main window</source>
+            <translation>Не влияет на счётчики трафика профилей в главном окне</translation>
+        </message>
+        <message>
+            <source>Enable mixed-case SNI for profiles</source>
+            <translation>Включить смешанный регистр SNI для профилей</translation>
+        </message>
+        <message>
+            <source>Enables the following config to be used as egress</source>
+            <translation>Позволяет использовать следующую конфигурацию как исходящее соединение</translation>
+        </message>
+        <message>
+            <source>Following format should be used</source>
+            <translation>Используйте следующий формат</translation>
+        </message>
+        <message>
+            <source>Fragment profiles whose Fragment setting is left on auto</source>
+            <translation>Фрагментировать профили с настройкой Fragment = auto</translation>
+        </message>
+        <message>
+            <source>Fully disables the traffic aggregation feature</source>
+            <translation>Полностью отключает функцию агрегации трафика</translation>
+        </message>
+        <message>
+            <source>Gets a new config from cloudflare API</source>
+            <translation>Получает новую конфигурацию из API Cloudflare</translation>
+        </message>
+        <message>
+            <source>Local DNS can not be used in some configurations</source>
+            <translation>Локальный DNS не может использоваться в некоторых конфигурациях</translation>
+        </message>
+        <message>
+            <source>Method of http request, will be converted to uppercase</source>
+            <translation>Метод HTTP-запроса, будет преобразован в верхний регистр</translation>
+        </message>
+        <message>
+            <source>Mixed-case SNI to evade exact-match SNI filtering</source>
+            <translation>Смешанный регистр SNI для обхода фильтрации по точному совпадению</translation>
+        </message>
+        <message>
+            <source>Note that muxed connections may cause higher latencies</source>
+            <translation>Учтите, что мультиплексированные соединения могут вызвать задержки</translation>
+        </message>
+        <message>
+            <source>Overrides mux to On</source>
+            <translation>Принудительно включает мультиплексирование</translation>
+        </message>
+        <message>
+            <source>Selects a random available port on every run</source>
+            <translation>Выбирает случайный доступный порт при каждом запуске</translation>
+        </message>
+        <message>
+            <source>Server to Client TCP Brutal Speed</source>
+            <translation>Скорость TCP Brutal от сервера к клиенту</translation>
+        </message>
+        <message>
+            <source>TLS ClientHello fragmentation</source>
+            <translation>Фрагментация TLS ClientHello</translation>
+        </message>
+        <message>
+            <source>Timeout for URLtest in ms</source>
+            <translation>Тайм-аут URLtest в мс</translation>
+        </message>
+        <message>
+            <source>Use proxy for subscription request, update request etc</source>
+            <translation>Использовать прокси для запросов подписок, обновлений и т.д.</translation>
+        </message>
+        <message>
+            <source>Used as default strategy when resolving outbound/dns server domains</source>
+            <translation>Стратегия по умолчанию для разрешения доменов серверов</translation>
+        </message>
+        <message>
+            <source>When enabled, Direct IP CIDRs and rule sets will also be processed by routes</source>
+            <translation>При включении IP CIDR и наборы правил напрямую также обрабатываются маршрутами</translation>
+        </message>
+        <message>
+            <source>When enabled, If the currently active profile needs to use an extra core</source>
+            <translation>При включении, если активный профиль использует дополнительное ядро</translation>
+        </message>
+        <message>
+            <source>When enabled, domains destined for direct outbound will also be resolved by remote DNS</source>
+            <translation>При включении домены прямого исходящего соединения также разрешаются удалённым DNS</translation>
+        </message>
+        <message>
+            <source>When to choose Xray when importing vless profiles</source>
+            <translation>Когда выбирать Xray при импорте VLESS-профилей</translation>
+        </message>
+        <message>
+            <source>Whether to listen on 0.0.0.0 so that other devices on the LAN can use the DNS server</source>
+            <translation>Слушать на 0.0.0.0 для использования DNS-сервера другими устройствами в сети</translation>
+        </message>
+        <message>
+            <source>Which TLS fragmentation implementation profiles use</source>
+            <translation>Какую реализацию TLS-фрагментации использовать в профилях</translation>
+        </message>
+        <message>
+            <source>applies to all tests</source>
+            <translation>применяется ко всем тестам</translation>
+        </message>
+        <message>
+            <source>args to pass to the executable</source>
+            <translation>Аргументы для передачи исполняемому файлу</translation>
+        </message>
+        <message>
+            <source>comma seperated list of subnets</source>
+            <translation>Список подсетей через запятую</translation>
+        </message>
+        <message>
+            <source>contents of the config file that will be passed to the executable</source>
+            <translation>Содержимое конфигурационного файла для исполняемого файла</translation>
+        </message>
+        <message>
+            <source>per-config and per-app usage history kept in a separate database, shown in the Traffic Stats dashboard</source>
+            <translation>история использования по конфигурациям и приложениям хранится отдельно, отображается в «Статистика трафика»</translation>
+        </message>
+        <message>
+            <source>persistent_keepalive_interval in seconds</source>
+            <translation>Интервал keep-alive в секундах</translation>
+        </message>
+        <message>
+            <source>time format, like 500ms, 10ms etc</source>
+            <translation>Формат времени, например 500ms, 10ms и т.д.</translation>
+        </message>
+        <message>
+            <source>timeout in milliseconds</source>
+            <translation>Тайм-аут в миллисекундах</translation>
+        </message>
+        <message>
+            <source>use tailscale dns as the remote dns</source>
+            <translation>Использовать DNS Tailscale как удалённый DNS</translation>
+        </message>
     </context>
     <context>
         <name>SpeedWidget</name>
