@@ -39,8 +39,6 @@ private:
     void setupUI();
     void applyStyle();
     void extractAndApplyUpdate();
-    void createUpdateScript();
-    void restartApp();
 
     // UI Elements
     QLabel *titleLabel;

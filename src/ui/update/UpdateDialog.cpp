@@ -285,118 +285,37 @@ void UpdateDialog::onRestartClicked()
 void UpdateDialog::extractAndApplyUpdate()
 {
     QString appDir = QApplication::applicationDirPath();
-    QString zipPath = tempFile->fileName();
-    QString extractDir = appDir + "/_update_temp";
 
-    // Create temp extraction directory
-    QDir().mkpath(extractDir);
+    // Copy downloaded ZIP to app directory as FreeLink.zip
+    QString zipInApp = appDir + "/FreeLink.zip";
+    if (tempFile && QFile::exists(tempFile->fileName())) {
+        QFile::remove(zipInApp);
+        if (!QFile::copy(tempFile->fileName(), zipInApp)) {
+            circularProgress->setState(CircularProgress::Error);
+            circularProgress->setStatusText(tr("Failed to copy update file"));
+            restartButton->setEnabled(true);
+            cancelButton->setEnabled(true);
+            return;
+        }
+    }
 
-    // Use PowerShell to extract
-    QStringList args;
-#ifdef Q_OS_WIN
-    args << "-Command" << QString(
-        "Expand-Archive -Path '%1' -DestinationPath '%2' -Force"
-    ).arg(zipPath, extractDir);
-#else
-    args << "-c" << QString("unzip -o '%1' -d '%2'").arg(zipPath, extractDir);
-#endif
-
-    QProcess extractProcess;
-#ifdef Q_OS_WIN
-    extractProcess.start("powershell", args);
-#else
-    extractProcess.start("sh", args);
-#endif
-    extractProcess.waitForFinished(60000);
-
-    if (extractProcess.exitCode() != 0) {
+    // Find updater.exe in app directory
+    QString updaterPath = appDir + "/updater.exe";
+    if (!QFile::exists(updaterPath)) {
         circularProgress->setState(CircularProgress::Error);
-        circularProgress->setStatusText(tr("Extraction failed"));
+        circularProgress->setStatusText(tr("updater.exe not found"));
         restartButton->setEnabled(true);
         cancelButton->setEnabled(true);
         return;
     }
 
-    // Create update script
-    createUpdateScript();
-
     circularProgress->setState(CircularProgress::Restarting);
     circularProgress->setStatusText(tr("Update applied! Restarting"));
     circularProgress->setProgress(1.0);
 
-    // Small delay then restart
-    QTimer::singleShot(1500, this, &UpdateDialog::restartApp);
-}
-
-void UpdateDialog::createUpdateScript()
-{
-    // No script needed - updater.exe handles everything
-}
-
-void UpdateDialog::restartApp()
-{
-    QString appDir = QApplication::applicationDirPath();
-    QString extractDir = appDir + "/_update_temp";
-
-#ifdef Q_OS_WIN
-    // Find updater.exe in extracted ZIP
-    QString updaterPath = extractDir + "/FreeLink/updater.exe";
-    if (!QFile::exists(updaterPath)) {
-        updaterPath = extractDir + "/updater.exe";
-    }
-
-    if (QFile::exists(updaterPath)) {
-        // Move FreeLink.zip to app directory (updater expects it there)
-        QString zipInApp = appDir + "/FreeLink.zip";
-        if (tempFile && QFile::exists(tempFile->fileName())) {
-            QFile::remove(zipInApp);
-            QFile::copy(tempFile->fileName(), zipInApp);
-        }
-
-        // Launch updater.exe from app directory
+    // Launch updater.exe (it handles extraction, copy, restart)
+    QTimer::singleShot(1000, this, [=]() {
         QProcess::startDetached(updaterPath, {}, appDir);
-    } else {
-        // Fallback: use .bat script
-        QString scriptPath = QDir::tempPath() + "/freelink_update.bat";
-        QFile script(scriptPath);
-        if (script.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            QTextStream out(&script);
-            out << "@echo off\n";
-            out << "chcp 65001 >nul\n";
-            out << "timeout /t 3 /nobreak > nul\n";
-            out << "taskkill /f /im FreeLink.exe > nul 2>&1\n";
-            out << "timeout /t 2 /nobreak > nul\n";
-            out << "set \"SRC=" << extractDir << "\\FreeLink\"\n";
-            out << "if not exist \"%SRC%\" set \"SRC=" << extractDir << "\"\n";
-            out << "xcopy /E /Y /I \"%SRC%\\*\" \"" << appDir << "\\\" >nul 2>&1\n";
-            out << "rmdir /S /Q \"" << extractDir << "\" >nul 2>&1\n";
-            out << "del /Q \"" << appDir << "\\_update.zip\" >nul 2>&1\n";
-            out << "start \"\" \"" << appDir << "\\FreeLink.exe\"\n";
-            out << "del /Q \"%TEMP%\\freelink_update.bat\" >nul 2>&1\n";
-            script.close();
-        }
-        QProcess::startDetached("cmd", {"/c", scriptPath});
-    }
-#else
-    // Linux/Mac: use shell script
-    QString scriptPath = appDir + "/_update.sh";
-    QFile script(scriptPath);
-    if (script.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream out(&script);
-        out << "#!/bin/sh\n";
-        out << "sleep 3\n";
-        out << "killall FreeLink 2>/dev/null\n";
-        out << "sleep 2\n";
-        out << "cp -r \"" << extractDir << "/\"* \"" << appDir << "/\"\n";
-        out << "rm -rf \"" << extractDir << "\"\n";
-        out << "rm -f \"" << appDir << "/_update.zip\"\n";
-        out << "\"$appDir/FreeLink\" &\n";
-        out << "rm -f \"" << scriptPath << "\"\n";
-        script.close();
-        script.setPermissions(QFile::ExeOwner | QFile::ReadOwner | QFile::WriteOwner);
-    }
-    QProcess::startDetached("sh", {scriptPath});
-#endif
-
-    qApp->exit(0);
+        qApp->exit(0);
+    });
 }
